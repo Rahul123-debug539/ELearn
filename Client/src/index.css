@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f8f8f8;
+}
+
+a {
+  color: #38bdf8;
+}
+
+a:hover {
+  color: #0ea5e9;
+}
+
+.admin-page {
+  padding: 2rem;
+  color: #000000;
+  min-height: calc(100vh - 120px);
+  background: #ffffff;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  margin: 1rem 0;
+  border: 1px solid #1e293b;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-select {
+  background: #fdfeff;
+  border: 1px solid #334155;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.4rem;
+  color: #000000;
+}
+
+.admin-form button {
+  background: linear-gradient(135deg, #22d3ee, #6366f1);
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #1e293b;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}

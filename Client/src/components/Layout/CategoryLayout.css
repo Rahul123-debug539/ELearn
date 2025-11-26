@@ -1,0 +1,33 @@
+.cat-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 120px);
+  background: #ffffff;
+  color: #00050e;
+}
+
+.cat-sidebar {
+  border-right: 1px solid #1e293b;
+  background-color: #1e293b;
+  color: white;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+
+.cat-content {
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+}
+
+/* responsive */
+@media (max-width: 800px) {
+  .cat-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cat-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #1e293b;
+  }
+}
