@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="LG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#36f2ff"/>
+      <stop offset="50%" stop-color="#6a63ff"/>
+      <stop offset="100%" stop-color="#c53bff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- L -->
+  <path d="
+    M70 60
+    L110 60
+    L110 200
+    L180 200
+    L170 230
+    L70 230
+    Z"
+    fill="url(#LG)"
+  />
+
+  <!-- E -->
+  <path d="
+    M180 100
+    C220 100 245 120 245 150
+    C245 180 220 200 185 200
+    L155 200
+    C205 200 215 180 215 160
+    C215 140 205 120 165 120
+    L165 110
+    C190 110 205 110 180 100
+    Z"
+    fill="url(#LG)"
+  />
+</svg>

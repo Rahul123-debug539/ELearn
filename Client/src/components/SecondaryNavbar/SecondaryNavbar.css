@@ -1,0 +1,47 @@
+.subnav {
+  width: 100%;
+  background: #f8faff;
+  border-bottom: 1px solid #1e293b;
+  overflow-x: auto;
+  display: flex;
+  align-items: center;
+}
+
+.subnav-list {
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  margin: 0;
+  font-weight: bold;
+  list-style: none;
+  width: max-content;
+}
+
+.subnav-list li {
+  cursor: pointer;
+  color: #02070e;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.subnav-list li:hover {
+  background: #c95b06;
+}
+
+.subnav-list li.active {
+  background: #c0098fbe;
+  color: #0d01b3;
+}
+
+/* scrollbar */
+.subnav::-webkit-scrollbar {
+  height: 4px;
+}
+
+.subnav::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 10px;
+}
