@@ -1,33 +1,50 @@
+/* ---------- MAIN LAYOUT ---------- */
 .cat-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  min-height: calc(100vh - 120px);
+  display: flex;
   background: #ffffff;
   color: #00050e;
+  min-height: 110vh;
 }
 
+/* ---------- SIDEBAR (NO FOOTER OVERLAP) ---------- */
 .cat-sidebar {
-  border-right: 1px solid #1e293b;
+  width: 260px;
+  height: calc(110vh - 60px);
+  /* Footer ki height minus */
+  position: sticky;
+  /* NOT fixed */
+  top: 0;
+  overflow-y: auto;
   background-color: #1e293b;
   color: white;
   padding: 2rem;
-  overflow-y: auto;
+  box-sizing: border-box;
+  border-right: 1px solid #1e293b;
 }
 
-
+/* ---------- CONTENT AREA ---------- */
 .cat-content {
+  flex: 1;
   padding: 1rem 1.5rem;
+  min-height: calc(100vh - 60px);
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
-/* responsive */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 800px) {
   .cat-layout {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .cat-sidebar {
-    border-right: none;
-    border-bottom: 1px solid #1e293b;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    position: relative;
+  }
+
+  .cat-content {
+    margin-left: 0;
   }
 }

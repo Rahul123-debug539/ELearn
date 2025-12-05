@@ -1,3 +1,4 @@
+// models/Content.js
 const mongoose = require("mongoose");
 
 const contentSchema = new mongoose.Schema(
@@ -5,38 +6,34 @@ const contentSchema = new mongoose.Schema(
     subtopicId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Subtopic",
-      required: true
+      required: true,
+      index: true
     },
+
     title: {
       type: String,
       required: true,
       trim: true
     },
-    description: {
+
+    // WYSIWYG HTML CONTENT
+    fullContent: {
       type: String,
       required: true
     },
-    code: {
-      type: String,
-      default: ""
-    },
-    images: [
-      {
-        type: String // /uploads/... URL
-      }
-    ],
-    notes: {
-      type: String,
-      default: ""
-    },
-    examples: {
-      type: String,
-      default: ""
-    },
-    adSection: {
-      type: String,
-      default: "" // future advertisement embed
-    }
+
+    // old fields optional
+    description: { type: String, default: "" },
+    code: { type: String, default: "" },
+    examples: { type: String, default: "" },
+    notes: { type: String, default: "" },
+
+    images: { type: [String], default: [] },
+    adSection: { type: String, default: "" },
+    adImage: { type: String, default: "" },
+    videoUrl: { type: String, default: "" },
+
+    order: { type: Number, default: 0 }
   },
   { timestamps: true }
 );

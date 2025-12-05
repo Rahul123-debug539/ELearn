@@ -93,10 +93,63 @@
   margin-bottom: 0.4rem;
   color: #38bdf8;
 }
+/* Code block */
+pre {
+  background: #f6f8fa;
+  padding: 12px;
+  border-left: 4px solid #4a90e2;
+  border-radius: 5px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* Output Block */
+.output-block {
+  background: #fffbe6;
+  border-left: 4px solid #ffa500;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
 
 .admin-card p {
   opacity: 0.75;
   font-size: 0.95rem;
+}
+
+.preview-box {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.preview-item {
+  position: relative;
+}
+
+.preview-item img,
+.preview-item iframe {
+  width: 150px;
+  height: 100px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 /* ACCESS DENIED */

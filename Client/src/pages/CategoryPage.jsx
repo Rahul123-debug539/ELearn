@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/api";
 import CategoryLayout from "../components/Layout/CategoryLayout";
+import "./CategoryLayout.css"; // OUR NEW GFG-LIKE STYLING
 
 function CategoryPage() {
   const { categoryId } = useParams();
@@ -10,79 +11,91 @@ function CategoryPage() {
   const [expandedTopic, setExpandedTopic] = useState(null);
   const [subtopics, setSubtopics] = useState({});
   const [selectedSubtopic, setSelectedSubtopic] = useState(null);
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState([]);
 
-  // load topics for category
+  /* -------------------------------
+      LOAD TOPICS
+  ------------------------------- */
   useEffect(() => {
     const fetchTopics = async () => {
       try {
         const res = await api.get(`/topics/${categoryId}`);
         if (res.data.status) setTopics(res.data.topics);
       } catch (err) {
-        console.error("Error fetching topics", err);
+        console.error("Error fetching topics:", err);
       }
     };
+
     fetchTopics();
     setExpandedTopic(null);
     setSelectedSubtopic(null);
-    setContent(null);
+    setContent([]);
   }, [categoryId]);
 
+  /* -------------------------------
+      EXPAND TOPIC → LOAD SUBTOPICS
+  ------------------------------- */
   const toggleTopic = async (topic) => {
     if (expandedTopic === topic._id) {
       setExpandedTopic(null);
       return;
     }
+
     setExpandedTopic(topic._id);
 
-    // fetch subtopics if not already
     if (!subtopics[topic._id]) {
       try {
         const res = await api.get(`/subtopics/${topic._id}`);
         if (res.data.status) {
-          setSubtopics((prev) => ({ ...prev, [topic._id]: res.data.subtopics }));
+          setSubtopics((prev) => ({
+            ...prev,
+            [topic._id]: res.data.subtopics
+          }));
         }
       } catch (err) {
-        console.error("Error fetching subtopics", err);
+        console.error("Error fetching subtopics:", err);
       }
     }
   };
 
+  /* -------------------------------
+      LOAD CONTENT OF SUBTOPIC
+  ------------------------------- */
   const loadContent = async (sub) => {
     setSelectedSubtopic(sub._id);
+
     try {
       const res = await api.get(`/content/${sub._id}`);
-      if (res.data.status) {
-        setContent(res.data.content);
-      } else {
-        setContent(null);
-      }
+      if (res.data.status) setContent(res.data.content || []);
+      else setContent([]);
     } catch (err) {
-      console.error("Error fetching content", err);
+      console.error("Error fetching content:", err);
+      setContent([]);
     }
   };
 
+  /* -------------------------------
+      SIDEBAR UI
+  ------------------------------- */
   const sidebar = (
     <div>
-      <h3 style={{ marginBottom: "0.8rem" }}>Topics</h3>
+      <h3 className="sidebar-heading">📘 Topics</h3>
+
       <ul className="topic-list">
         {topics.map((topic) => (
           <li key={topic._id}>
-            <div
-              className="topic-row"
-              onClick={() => toggleTopic(topic)}
-            >
+            <div className="topic-row" onClick={() => toggleTopic(topic)}>
               <span>{topic.name}</span>
               <span>{expandedTopic === topic._id ? "▾" : "▸"}</span>
             </div>
+
             {expandedTopic === topic._id && (
               <ul className="subtopic-list">
                 {(subtopics[topic._id] || []).map((sub) => (
                   <li
                     key={sub._id}
-                    className={
-                      selectedSubtopic === sub._id ? "subtopic active" : "subtopic"
-                    }
+                    className={`subtopic ${selectedSubtopic === sub._id ? "active" : ""
+                      }`}
                     onClick={() => loadContent(sub)}
                   >
                     {sub.name}
@@ -96,49 +109,61 @@ function CategoryPage() {
     </div>
   );
 
+  /* -------------------------------
+      CONTENT UI (MAIN PANEL)
+  ------------------------------- */
   const contentArea = (
-    <div>
-      {!content && (
-        <p style={{ opacity: 0.7 }}>
-          Select a subtopic from the left sidebar to view its content.
+    <div className="content-wrapper">
+      {content.length === 0 && (
+        <p className="empty-text">
+          👈 Start by selecting a topic from the left sidebar.
         </p>
       )}
-      {content && (
-        <div>
-          <h2 style={{ marginBottom: "0.5rem" }}>{content.title}</h2>
-          <p
-            style={{ whiteSpace: "pre-wrap", marginBottom: "1rem" }}
-          >
-            {content.description}
-          </p>
 
-          {content.code && (
-            <pre className="code-block">
-              {content.code}
-            </pre>
-          )}
+      {content.length > 0 &&
+        content.map((item, idx) => (
+          <div key={idx} className="content-block">
+            {/* TITLE */}
+            <h1 className="content-title">{item.title}</h1>
 
-          {content.images && content.images.length > 0 && (
-            <div className="image-grid">
-              {content.images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={`http://localhost:5000${img}`}
-                  alt="content"
-                />
-              ))}
-            </div>
-          )}
+            {/* FULL HTML CONTENT */}
+            <div
+              className="html-content"
+              dangerouslySetInnerHTML={{ __html: item.fullContent }}
+            />
 
-          {content.examples && (
-            <>
-              <h3>Examples</h3>
-              <p style={{ whiteSpace: "pre-wrap" }}>{content.examples}</p>
-            </>
-          )}
+            {/* CLOUDINARY IMAGES */}
+            {item.images?.length > 0 && (
+              <div className="image-grid">
+                {item.images.map((img, i) => (
+                  <img key={i} src={img} alt="content-img" />
+                ))}
+              </div>
+            )}
 
-        </div>
-      )}
+            {/* YOUTUBE VIDEO */}
+            {item.videoUrl && (
+              <div className="video-container">
+                <iframe src={item.videoUrl} title="video" allowFullScreen />
+              </div>
+            )}
+
+            {/* CUSTOM HTML ADS (RIGHT SIDE LIKE GFG) */}
+            {item.adSection && (
+              <div
+                className="ad-section"
+                dangerouslySetInnerHTML={{ __html: item.adSection }}
+              />
+            )}
+
+            {/* AD IMAGE */}
+            {item.adImage && (
+              <img src={item.adImage} alt="ad" className="ad-image" />
+            )}
+
+            <hr className="content-divider" />
+          </div>
+        ))}
     </div>
   );
 
