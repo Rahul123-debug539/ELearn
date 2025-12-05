@@ -22,7 +22,7 @@ function AdminRegister() {
 
       if (res.data.status) {
         toast.success("Admin account created successfully!");
-        navigate("./admin/AdminDashboard");
+        navigate("/admin/AdminDashboard");
       } else {
         toast.error(res.data.message);
       }

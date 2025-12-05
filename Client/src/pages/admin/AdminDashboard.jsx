@@ -54,6 +54,11 @@ function AdminDashboard() {
             <h3>Manage Content</h3>
             <p>Add images, code blocks, examples and main learning content.</p>
           </Link>
+
+          <Link to="/admin/manage-content" className="admin-card">
+            <h3>Edit & Delete Content</h3>
+            <p>Edit & Delete images, code blocks, examples and main learning content.</p>
+          </Link>
         </div>
       </main>
     </div>

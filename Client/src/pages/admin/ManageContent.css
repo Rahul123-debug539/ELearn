@@ -1,0 +1,183 @@
+/* ================================
+   CONTENT LIST SECTION (ADMIN)
+================================ */
+
+/* Section title */
+.existing-title {
+  margin-top: 35px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  border-left: 5px solid #4f46e5;
+  padding-left: 10px;
+}
+
+/* List box */
+.admin-content-list {
+  margin-top: 15px;
+  list-style: none;
+  padding: 0;
+}
+
+/* Each row */
+.content-row {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.25s;
+}
+
+.content-row:hover {
+  background: #f8fafc;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.10);
+  transform: translateX(3px);
+}
+
+/* Title inside list */
+.content-row span {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.edit-btn {
+  background: #3b82f6;
+}
+
+.edit-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background: #ef4444;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+}
+
+/* ================================
+   FORM STYLING (ADD CONTENT)
+================================ */
+
+.admin-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.admin-select,
+.admin-form input,
+.admin-form button {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 16px;
+  outline: none;
+  transition: 0.25s;
+}
+
+.admin-select:focus,
+.admin-form input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Add content button */
+.admin-btn {
+  background: #4f46e5;
+  color: white;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.admin-btn:hover {
+  background: #4338ca;
+  transform: translateY(-2px);
+}
+
+/* ================================
+   IMAGE PREVIEW GRID
+================================ */
+
+.preview-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.preview-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fafc;
+  padding: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.10);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Remove button */
+.remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+/* ================================
+   VIDEO PREVIEW
+================================ */
+
+.preview-item iframe {
+  width: 100%;
+  height: 120px;
+  border-radius: 8px;
+}
