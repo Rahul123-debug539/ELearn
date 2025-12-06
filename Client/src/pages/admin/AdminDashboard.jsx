@@ -25,14 +25,16 @@ function AdminDashboard() {
           <Link to="/admin/categories" className="menu-link">Categories</Link>
           <Link to="/admin/topics" className="menu-link">Topics</Link>
           <Link to="/admin/subtopics" className="menu-link">Subtopics</Link>
-          <Link to="/admin/content" className="menu-link">Content</Link>
+          <Link to="/admin/manage-content" className="menu-link">Content</Link>
+          <Link to="/admin/manage-content" className="menu-link">Edit Content</Link>
         </nav>
+
       </aside>
 
       {/* Main Content */}
       <main className="admin-main">
         <h1 className="page-title">Welcome, Admin 👋</h1>
-        <p className="page-subtitle">Manage your LearnEase platform from here.</p>
+        <p className="page-subtitle">Manage your ELearning platform from here.</p>
 
         <div className="admin-cards">
           <Link to="/admin/categories" className="admin-card">
@@ -50,7 +52,7 @@ function AdminDashboard() {
             <p>Create subtopics for each topic with dropdown support.</p>
           </Link>
 
-          <Link to="/admin/content" className="admin-card">
+          <Link to="/admin/content/add" className="admin-card">
             <h3>Manage Content</h3>
             <p>Add images, code blocks, examples and main learning content.</p>
           </Link>

@@ -1,285 +1,125 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 import { toast } from "react-toastify";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-// import Prism from "prismjs";
-// import "prismjs/themes/prism-tomorrow.css";
+import "./AdminDashboard.css";
 
-import "./ManageContent.css";
-
-function ManageContent() {
+function ManageCategories() {
   const [categories, setCategories] = useState([]);
-  const [topics, setTopics] = useState([]);
-  const [subtopics, setSubtopics] = useState([]);
+  const [name, setName] = useState("");
+  const [editing, setEditing] = useState(null);
 
-  const [selectedCat, setSelectedCat] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
-  const [selectedSub, setSelectedSub] = useState("");
-
-  const [title, setTitle] = useState("");
-  const [fullContent, setFullContent] = useState("");
-
-  const [images, setImages] = useState([]);
-  const [adImage, setAdImage] = useState(null);
-  const [videoUrl, setVideoUrl] = useState("");
-
-  /* LOAD CATEGORIES */
+  // Load categories on mount
   useEffect(() => {
-    api.get("/categories").then((res) => {
-      if (res.data.status) setCategories(res.data.categories);
-    });
+    loadCategories();
   }, []);
 
-  /* LOAD TOPICS */
-  useEffect(() => {
-    if (!selectedCat) return;
-    api.get(`/topics/${selectedCat}`).then((res) => {
-      if (res.data.status) setTopics(res.data.topics);
-    });
-  }, [selectedCat]);
-
-  /* LOAD SUBTOPICS */
-  useEffect(() => {
-    if (!selectedTopic) return;
-    api.get(`/subtopics/${selectedTopic}`).then((res) => {
-      if (res.data.status) setSubtopics(res.data.subtopics);
-    });
-  }, [selectedTopic]);
-
-  /* SUBMIT CONTENT */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!selectedSub) return toast.error("Select a Subtopic");
-    if (!title.trim()) return toast.error("Title is required");
-    if (!fullContent.trim()) return toast.error("Content cannot be empty");
-
+  const loadCategories = async () => {
     try {
-      const fd = new FormData();
-
-      fd.append("subtopicId", selectedSub);
-      fd.append("title", title);
-      fd.append("fullContent", fullContent);
-
-      images.forEach((img) => fd.append("images", img));
-
-      if (adImage) fd.append("adImage", adImage);
-
-      if (videoUrl.trim()) fd.append("videoUrl", videoUrl.trim());
-
-      const res = await api.post("/content/add", fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
-      if (res.data.status) {
-        toast.success("Content Added Successfully!");
-
-        setTitle("");
-        setFullContent("");
-        setImages([]);
-        setAdImage(null);
-        setVideoUrl("");
-      } else {
-        toast.error(res.data.message);
-      }
+      const { data } = await api.get("/categories");
+      if (data.status) setCategories(data.categories);
     } catch (err) {
-      console.error("Add content error:", err);
-      toast.error("Failed to add content");
+      toast.error("Failed to load categories");
     }
   };
 
-  /* SAFE VIDEO PREVIEW */
-  const getEmbedPreview = () => {
-    if (!videoUrl) return "";
+  // Add or Update category
+  const handleSubmit = async () => {
+    if (!name.trim()) return toast.error("Category name is required");
 
-    const regExp = /(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/;
-    const match = videoUrl.match(regExp);
+    try {
+      if (editing) {
+        const { data } = await api.put(`/categories/${editing}`, { name });
+        if (data.status) toast.success("Category updated");
+      } else {
+        const { data } = await api.post("/categories", { name });
+        if (data.status) toast.success("Category added");
+      }
 
-    return match ? `https://www.youtube.com/embed/${match[1]}` : "";
+      setName("");
+      setEditing(null);
+      loadCategories();
+    } catch {
+      toast.error("Action failed");
+    }
   };
 
-  /* 🔥 ReactQuill with Syntax Highlighting */
-  const quillModules = {
-    syntax: {
-      highlight: (text) =>
-        Prism.highlight(text, Prism.languages.javascript, "javascript")
-    },
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline"],
-      [{ color: [] }],
-      ["blockquote", "code-block"], // CODE BLOCK RESTORED
-      ["link", "image"],
-      ["clean"]
-    ]
+  const handleEdit = (cat) => {
+    setName(cat.name);
+    setEditing(cat._id);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this category?")) return;
+
+    try {
+      const { data } = await api.delete(`/categories/${id}`);
+      if (data.status) {
+        toast.success("Category deleted");
+        loadCategories();
+      }
+    } catch {
+      toast.error("Deletion failed");
+    }
   };
 
   return (
     <div className="admin-page">
-      <h2>Add New Content</h2>
+      <h2>Manage Categories</h2>
 
-      {/* CATEGORY SELECT */}
-      <select
-        className="admin-select"
-        value={selectedCat}
-        onChange={(e) => {
-          setSelectedCat(e.target.value);
-          setSelectedTopic("");
-          setSelectedSub("");
-        }}
-      >
-        <option value="">Select Category</option>
-        {categories.map((cat) => (
-          <option key={cat._id} value={cat._id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
+      {/* Input box */}
+      <div className="form-box">
+        <input
+          type="text"
+          placeholder="Enter Category Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      {/* TOPIC SELECT */}
-      {selectedCat && (
-        <select
-          className="admin-select"
-          value={selectedTopic}
-          onChange={(e) => {
-            setSelectedTopic(e.target.value);
-            setSelectedSub("");
-          }}
-        >
-          <option value="">Select Topic</option>
-          {topics.map((t) => (
-            <option key={t._id} value={t._id}>
-              {t.name}
-            </option>
+        <button className="admin-btn" onClick={handleSubmit}>
+          {editing ? "Update Category" : "Add Category"}
+        </button>
+      </div>
+
+      {/* Category List */}
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Category Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {categories.map((cat, i) => (
+            <tr key={cat._id}>
+              <td>{i + 1}</td>
+              <td>{cat.name}</td>
+              <td>
+                <button className="edit-btn" onClick={() => handleEdit(cat)}>
+                  Edit
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDelete(cat._id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
           ))}
-        </select>
-      )}
 
-      {/* SUBTOPIC SELECT */}
-      {selectedTopic && (
-        <select
-          className="admin-select"
-          value={selectedSub}
-          onChange={(e) => setSelectedSub(e.target.value)}
-        >
-          <option value="">Select Subtopic</option>
-          {subtopics.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      )}
-
-      {/* FORM START */}
-      {selectedSub && (
-        <form className="admin-form" onSubmit={handleSubmit}>
-          {/* TITLE */}
-          <input
-            type="text"
-            placeholder="Content Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-
-          {/* ReactQuill Editor */}
-          <ReactQuill
-            value={fullContent}
-            onChange={setFullContent}
-            theme="snow"
-            modules={quillModules}
-            style={{ height: "300px", marginBottom: "80px" }}
-          />
-
-          {/* IMAGE UPLOAD */}
-          <label>Upload Images:</label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={(e) => setImages([...e.target.files])}
-          />
-
-          {/* IMAGE PREVIEW */}
-          {images.length > 0 && (
-            <div className="preview-box">
-              {images.map((img, idx) => (
-                <div key={idx} className="preview-item">
-                  <img src={URL.createObjectURL(img)} alt="preview" />
-                  <button
-                    type="button"
-                    className="remove-btn"
-                    onClick={() => {
-                      const arr = [...images];
-                      arr.splice(idx, 1);
-                      setImages(arr);
-                    }}
-                  >
-                    ✖
-                  </button>
-                </div>
-              ))}
-            </div>
+          {categories.length === 0 && (
+            <tr>
+              <td colSpan="3" className="empty-msg">
+                No categories found
+              </td>
+            </tr>
           )}
-
-          {/* VIDEO URL */}
-          <input
-            type="text"
-            placeholder="YouTube URL (NOT iframe)"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-          />
-
-          {/* VIDEO PREVIEW */}
-          {getEmbedPreview() && (
-            <div className="preview-item">
-              <iframe
-                width="300"
-                height="180"
-                src={getEmbedPreview()}
-                allowFullScreen
-              ></iframe>
-              <button
-                type="button"
-                className="remove-btn"
-                onClick={() => setVideoUrl("")}
-              >
-                ✖
-              </button>
-            </div>
-          )}
-
-          {/* AD IMAGE */}
-          <label>Upload Ad Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setAdImage(e.target.files[0])}
-          />
-
-          {/* AD PREVIEW */}
-          {adImage && (
-            <div className="preview-item">
-              <img src={URL.createObjectURL(adImage)} alt="ad" />
-              <button
-                type="button"
-                className="remove-btn"
-                onClick={() => setAdImage(null)}
-              >
-                ✖
-              </button>
-            </div>
-          )}
-
-          <button type="submit" className="admin-btn">
-            Add Content
-          </button>
-        </form>
-      )}
+        </tbody>
+      </table>
     </div>
   );
 }
 
-export default ManageContent;
+export default ManageCategories;
