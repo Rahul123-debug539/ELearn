@@ -158,7 +158,8 @@ function ManageContent() {
                 [{ header: [1, 2, 3, false] }],
                 ["bold", "italic", "underline"],
                 [{ color: [] }],
-                ["blockquote", "code-block"],
+                ["blockquote", "code-block", ],
+                [{ list: "ordered" }, { list: "bullet" }],
                 ["link", "image"],
                 ["clean"]
               ]
