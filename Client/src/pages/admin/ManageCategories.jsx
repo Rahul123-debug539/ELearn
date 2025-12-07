@@ -15,7 +15,7 @@ function ManageCategories() {
 
   const loadCategories = async () => {
     try {
-      const { data } = await api.get("/categories");
+      const { data } = await api.get("/api/categories");
       if (data.status) setCategories(data.categories);
     } catch (err) {
       toast.error("Failed to load categories");
@@ -28,10 +28,11 @@ function ManageCategories() {
 
     try {
       if (editing) {
-        const { data } = await api.put(`/categories/${editing}`, { name });
+        const { data } = await api.put(`/api/categories/${editing}`, { name });
+
         if (data.status) toast.success("Category updated");
       }else {
-        const { data } = await api.post("/categories/add", { name });
+        const { data } = await api.post("/api/categories/add", { name });
 
         if (data.status) toast.success("Category added");
       }
@@ -53,7 +54,8 @@ function ManageCategories() {
     if (!window.confirm("Delete this category?")) return;
 
     try {
-      const { data } = await api.delete(`/categories/${id}`);
+      const { data } = await api.delete(`/api/categories/${id}`);
+
       if (data.status) {
         toast.success("Category deleted");
         loadCategories();
