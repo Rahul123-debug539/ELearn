@@ -1,7 +1,11 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+// const api = axios.create({
+//   baseURL: "http://localhost:5000/api",
+// });
+
+const API = axios.create({
+  baseURL: "https://elearn-70zx.onrender.com"
 });
 
 // REQUEST: automatically attach token
