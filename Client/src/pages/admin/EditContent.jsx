@@ -64,7 +64,7 @@ function EditContent() {
 
       if (res.data.status) {
         toast.success("Content Updated!");
-        navigate("/api/admin/content");
+        navigate("/admin/content");
       }
     } catch (err) {
       toast.error("Update failed");

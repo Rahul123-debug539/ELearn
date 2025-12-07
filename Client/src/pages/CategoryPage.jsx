@@ -19,7 +19,7 @@ function CategoryPage() {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const res = await api.get(`/topics/${categoryId}`);
+        const res = await api.get(`/api/topics/${categoryId}`);
         if (res.data.status) setTopics(res.data.topics);
       } catch (err) {
         console.error("Error fetching topics:", err);
@@ -45,7 +45,7 @@ function CategoryPage() {
 
     if (!subtopics[topic._id]) {
       try {
-        const res = await api.get(`/subtopics/${topic._id}`);
+        const res = await api.get(`/api/subtopics/${topic._id}`);
         if (res.data.status) {
           setSubtopics((prev) => ({
             ...prev,
@@ -65,7 +65,7 @@ function CategoryPage() {
     setSelectedSubtopic(sub._id);
 
     try {
-      const res = await api.get(`/content/${sub._id}`);
+      const res = await api.get(`/api/content/${sub._id}`);
       if (res.data.status) setContent(res.data.content || []);
       else setContent([]);
     } catch (err) {

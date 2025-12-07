@@ -34,7 +34,7 @@ function SecondaryNavbar() {
 
   const handleClick = (cat) => {
     setActiveCat(cat._id);
-    navigate(`/api/category/${cat._id}`);
+    navigate(`/category/${cat._id}`);
   };
 
   return (
