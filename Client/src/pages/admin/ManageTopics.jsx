@@ -9,13 +9,13 @@ function ManageTopics() {
   const [name, setName] = useState("");
 
   const loadCategories = async () => {
-    const res = await api.get("/categories");
+    const res = await api.get("/api/categories");
     if (res.data.status) setCategories(res.data.categories);
   };
 
   const loadTopics = async () => {
     if (!selectedCat) return;
-    const res = await api.get(`/topics/${selectedCat}`);
+    const res = await api.get(`/api/topics/${selectedCat}`);
     if (res.data.status) setTopics(res.data.topics);
   };
 
@@ -30,7 +30,7 @@ function ManageTopics() {
   const addTopic = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/topics/add", {
+      const res = await api.post("/api/topics/add", {
         categoryId: selectedCat,
         name,
       });
@@ -46,7 +46,7 @@ function ManageTopics() {
 
   const deleteTopic = async (id) => {
     if (!confirm("Delete this topic?")) return;
-    const res = await api.delete(`/topics/${id}`);
+    const res = await api.delete(`/api/topics/${id}`);
     if (res.data.status) {
       toast.success("Topic deleted");
       loadTopics();
