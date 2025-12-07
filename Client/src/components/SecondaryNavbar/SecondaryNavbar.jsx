@@ -12,7 +12,7 @@ function SecondaryNavbar() {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const res = await api.get("/categories");
+        const res = await api.get("/api/categories");
         if (res.data.status) {
           setCategories(res.data.categories);
         }
@@ -34,7 +34,7 @@ function SecondaryNavbar() {
 
   const handleClick = (cat) => {
     setActiveCat(cat._id);
-    navigate(`/category/${cat._id}`);
+    navigate(`/api/category/${cat._id}`);
   };
 
   return (
