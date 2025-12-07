@@ -18,7 +18,8 @@ function AdminRegister() {
     e.preventDefault();
 
     try {
-      const res = await api.post("/auth/admin-register", form);
+      const res = await api.post("/api/auth/admin/create", form);
+
 
       if (res.data.status) {
         toast.success("Admin account created successfully!");
