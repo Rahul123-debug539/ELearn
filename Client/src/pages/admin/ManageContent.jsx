@@ -23,7 +23,7 @@ function ManageContent() {
 
   // Load categories
   useEffect(() => {
-    api.get("/categories").then((res) => {
+    api.get("/api/categories").then((res) => {
       if (res.data.status) setCategories(res.data.categories);
     });
   }, []);
@@ -31,7 +31,7 @@ function ManageContent() {
   // Load topics
   useEffect(() => {
     if (!selectedCat) return;
-    api.get(`/topics/${selectedCat}`).then((res) => {
+    api.get(`/api/topics/${selectedCat}`).then((res) => {
       if (res.data.status) setTopics(res.data.topics);
     });
   }, [selectedCat]);
@@ -39,7 +39,7 @@ function ManageContent() {
   // Load subtopics
   useEffect(() => {
     if (!selectedTopic) return;
-    api.get(`/subtopics/${selectedTopic}`).then((res) => {
+    api.get(`/api/subtopics/${selectedTopic}`).then((res) => {
       if (res.data.status) setSubtopics(res.data.subtopics);
     });
   }, [selectedTopic]);
@@ -66,7 +66,7 @@ function ManageContent() {
       // Add safe YouTube link (not iframe)
       if (videoUrl) fd.append("videoUrl", videoUrl);
 
-      const res = await api.post("/content/add", fd, {
+      const res = await api.post("/api/content/add", fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 

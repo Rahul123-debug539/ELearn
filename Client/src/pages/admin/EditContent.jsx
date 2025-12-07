@@ -28,7 +28,7 @@ function EditContent() {
 
   const loadContent = async () => {
     try {
-      const res = await api.get(`/content/single/${contentId}`);
+      const res = await api.get(`/api/content/single/${contentId}`);
       if (res.data.status) {
         const c = res.data.content;
         setForm({
@@ -58,13 +58,13 @@ function EditContent() {
 
       if (newAdImage) fd.append("adImage", newAdImage);
 
-      const res = await api.put(`/content/update/${contentId}`, fd, {   // ✔ FIXED
+      const res = await api.put(`/api/content/update/${contentId}`, fd, {   // ✔ FIXED
         headers: { "Content-Type": "multipart/form-data" }
       });
 
       if (res.data.status) {
         toast.success("Content Updated!");
-        navigate("/admin/content");
+        navigate("/api/admin/content");
       }
     } catch (err) {
       toast.error("Update failed");
