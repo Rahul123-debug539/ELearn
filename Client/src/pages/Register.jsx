@@ -19,7 +19,7 @@ function Register() {
 
     try {
       // REGISTER USER
-      const res = await api.post("/auth/register", {
+      const res = await api.post("api/auth/register", {
         ...form,
         role: "user", // default role
       });
