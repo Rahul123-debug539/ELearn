@@ -23,6 +23,6 @@ router.put("/:id", verifyToken, isAdmin, updateCategory);
 router.delete("/:id", verifyToken, isAdmin, deleteCategory);
 
 // GET ALL CATEGORIES (PUBLIC)
-router.get("/categories", getCategories);
+router.get("/", getCategories);
 
 module.exports = router;
