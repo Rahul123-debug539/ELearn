@@ -11,7 +11,7 @@ function Courses() {
 
   const loadCategories = async () => {
     try {
-      const res = await api.get("/categories");
+      const res = await api.get("/api/categories");
       if (res.data.status) setCategories(res.data.categories);
     } catch (err) {
       console.log("Category load error:", err);
@@ -38,7 +38,7 @@ function Courses() {
         {categories.map((cat) => (
           <Link
             key={cat._id}
-            to={`/category/${cat._id}`}
+            to={`/api/category/${cat._id}`}
             style={{
               background: "#0f172a",
               padding: "1.2rem",
