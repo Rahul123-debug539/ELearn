@@ -44,9 +44,10 @@ function ManageSubtopics() {
       });
       if (res.data.status) {
         toast.success("Subtopic added");
+        navigate("/admin");
         setName("");
         loadSubtopics();
-        navigate("/admin");
+        
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Error adding subtopic");
@@ -58,8 +59,9 @@ function ManageSubtopics() {
     const res = await api.delete(`/api/subtopics/${id}`);
     if (res.data.status) {
       toast.success("Subtopic deleted");
-      loadSubtopics();
       navigate("/admin");
+      loadSubtopics();
+      
     }
   };
 
