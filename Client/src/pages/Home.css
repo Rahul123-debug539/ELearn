@@ -9,7 +9,6 @@
   min-height: 100vh;
   color: rgb(255, 255, 255);
   overflow: hidden;
-  box-sizing: border-box;
 }
 
 /* LEFT */
@@ -134,6 +133,7 @@
   }
 }
 
+
 /* ======================== ABOUT ======================== */
 
 .about-highlight {
@@ -162,6 +162,7 @@
   border-color: #38bdf8;
   transform: translateY(-6px);
 }
+
 
 /* ======================== LANGUAGES ======================== */
 
@@ -194,120 +195,84 @@
   border-color: #38bdf8;
 }
 
-/* =======================================================
-   ✅ RESPONSIVE — ONLY SAFE OVERRIDES (NO DESIGN BREAK)
-   ======================================================= */
 
-/* Tablet */
+/* ========================================================= */
+/* ✅✅✅ MOBILE RESPONSIVE (ONLY ADDITION – DESKTOP SAFE) */
+/* ========================================================= */
+
 @media (max-width: 1024px) {
   .hero-modern {
-    padding: 3rem 3rem;
-  }
-
-  .hero-title {
-    font-size: 3rem;
+    padding: 3rem;
   }
 
   .hero-right {
-    width: 500px;
-    height: 500px;
+    width: 450px;
+    height: 450px;
   }
 }
 
-/* Mobile & Tablet */
 @media (max-width: 768px) {
   .hero-modern {
     flex-direction: column;
-    padding: 3rem 1.5rem;
     text-align: center;
+    padding: 3rem 1.5rem;
   }
 
   .hero-left {
     max-width: 100%;
-    margin-top: 1.5rem;
+  }
+
+  .hero-title {
+    font-size: 2.6rem;
   }
 
   .hero-desc {
     max-width: 100%;
-  }
-
-  .hero-title {
-    font-size: 2.4rem;
-  }
-
-  .hero-right {
-    margin-top: 2.5rem;
-    width: 380px;
-    height: 380px;
-  }
-
-  .blob {
-    width: 300px;
-    height: 300px;
-  }
-
-  .blob2 {
-    width: 260px;
-    height: 260px;
-  }
-
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lang-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Small Mobile */
-@media (max-width: 480px) {
-  .hero-modern {
-    padding: 2rem 1rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .gradient-text {
-    font-size: 1.9rem;
-  }
-
-  .hero-desc {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .hero-btn {
+    padding: 0.9rem 1.5rem;
+  }
+
+  .hero-right {
     width: 100%;
-    margin: 0 auto;
-    display: block;
+    height: 350px;
+    margin-top: 2rem;
+  }
+
+  .blob,
+  .blob2,
+  .blob-glow {
+    transform: scale(0.85);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2.1rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+  }
+
+  .hero-btn {
+    font-size: 0.9rem;
   }
 
   .stats-line {
     font-size: 0.8rem;
   }
 
-  .hero-right {
-    width: 280px;
-    height: 280px;
+  .blob,
+  .blob2,
+  .blob-glow {
+    display: none;
   }
 
-  .blob {
-    width: 220px;
-    height: 220px;
-  }
-
-  .blob2 {
-    width: 190px;
-    height: 190px;
-  }
-
-  .lang-grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
-  .lang-box {
-    font-size: 0.9rem;
+  .about-highlight,
+  .languages-showcase {
+    padding: 2.5rem 1rem;
   }
 }
