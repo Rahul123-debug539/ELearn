@@ -25,7 +25,7 @@ import Register from "./pages/Register";
 import AdminRegister from "./pages/AdminRegister";
 import Footer from "./components/Footer";
 import ViewContent from "./pages/ViewContent";
-
+import NotFound from "./pages/NotFound";
 
 import { useAuth } from "./context/AuthContext";
 
@@ -57,6 +57,7 @@ function App() {
 
       <Routes>
         {/* PUBLIC ROUTES */}
+        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />

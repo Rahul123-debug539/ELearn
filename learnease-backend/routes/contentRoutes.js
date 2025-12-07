@@ -6,13 +6,13 @@ const upload = require("../middleware/upload");
 const { verifyToken } = require("../middleware/verifyToken");
 const { isAdmin } = require("../middleware/isAdmin");
 
-const Content = require("../models/Content");
 const {
   addContent,
   updateContent,
   deleteContent,
   getContent,
-  getSingleContent
+  getSingleContent,
+  getRelatedContent
 } = require("../controllers/contentController");
 
 /* =============================
@@ -52,37 +52,15 @@ router.delete(
    PUBLIC ROUTES
 ============================= */
 
-// ⭐ GET CONTENT DETAIL BY ID (for view page)
-router.get("/detail/:contentId", async (req, res) => {
-  try {
-    const content = await Content.findById(req.params.contentId);
+// ✅ GET SINGLE CONTENT (FOR VIEW PAGE & EDIT PAGE)
+router.get("/single/:contentId", getSingleContent);
 
-    if (!content) {
-      return res.status(404).json({ status: false, message: "Content not found" });
-    }
+// ✅ GET CONTENT LIST BY SUBTOPIC
+router.get("/list/:subtopicId", getContent);
 
-    res.json({ status: true, content });
-  } catch {
-    res.status(500).json({ status: false });
-  }
-});
-
-// ⭐ GET LIST OF CONTENT BY SUBTOPIC
-router.get("/list/:subtopicId", async (req, res) => {
-  try {
-    const list = await Content.find({ subtopicId: req.params.subtopicId })
-      .sort({ order: 1 });
-
-    res.json({ status: true, list });
-  } catch {
-    res.status(500).json({ status: false });
-  }
-});
-
-// LAST ROUTE – FOR SAFETY
+// ✅ BACKWARD COMPATIBILITY (IF OLD FRONTEND CALLS EXIST)
 router.get("/:subtopicId", getContent);
-
-router.get("/single/:id", getSingleContent);
+router.get("/related/:contentId", getRelatedContent);
 
 
 module.exports = router;

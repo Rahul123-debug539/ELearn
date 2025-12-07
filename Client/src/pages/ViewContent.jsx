@@ -7,48 +7,56 @@ function ViewContent() {
   const navigate = useNavigate();
 
   const [content, setContent] = useState(null);
-  const [toc, setToc] = useState([]); // Table of contents (list of contents inside same subtopic)
+  const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // FETCH CURRENT CONTENT
+  // ✅ FETCH CURRENT CONTENT + RELATED CONTENT
   useEffect(() => {
     setLoading(true);
 
-    fetch(`http://localhost:5000/api/content/detail/${contentId}`)
+    // ✅ CURRENT CONTENT
+    fetch(`http://localhost:5000/api/content/single/${contentId}`)
       .then((res) => res.json())
       .then((data) => {
         setContent(data.content);
 
-        // Fetch TOC (all contents of this subtopic)
-        if (data.content?.subtopicId) {
-          fetch(`http://localhost:5000/api/content/${data.content.subtopicId}`)
-            .then((res) => res.json())
-            .then((d) => setToc(d.content || []));
-        }
+        // ✅ RELATED CONTENT (TITLE BASED)
+        fetch(`http://localhost:5000/api/content/related/${contentId}`)
+          .then((res) => res.json())
+          .then((d) => setRelated(d.related || []));
 
         setLoading(false);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("ViewContent Error:", err);
+        setLoading(false);
+      });
   }, [contentId]);
 
-  if (loading || !content) return <h2 className="vc-loading">Loading...</h2>;
-
-  // CURRENT INDEX FOR NEXT/PREV
-  const currentIndex = toc.findIndex((x) => x._id === contentId);
-  const prevContent = toc[currentIndex - 1];
-  const nextContent = toc[currentIndex + 1];
+  if (loading || !content) {
+    return <h2 className="vc-loading">Loading...</h2>;
+  }
 
   return (
     <div className="vc-container">
 
-      {/* LEFT SIDEBAR (TOC) */}
+      {/* =========================
+          RELATED CONTENT SIDEBAR
+      ========================= */}
       <aside className="vc-sidebar">
-        <h3 className="vc-sidebar-title">Contents</h3>
+        <h3 className="vc-sidebar-title">Related Content</h3>
+
+        {related.length === 0 && (
+          <p style={{ opacity: 0.7, fontSize: "14px" }}>
+            No related content found
+          </p>
+        )}
+
         <ul className="vc-toc">
-          {toc.map((item) => (
+          {related.map((item) => (
             <li
               key={item._id}
-              className={item._id === contentId ? "active toc-item" : "toc-item"}
+              className="toc-item"
               onClick={() => navigate(`/content/${item._id}`)}
             >
               {item.title}
@@ -57,19 +65,14 @@ function ViewContent() {
         </ul>
       </aside>
 
-      {/* MAIN CONTENT */}
+      {/* =========================
+          MAIN CONTENT
+      ========================= */}
       <main className="vc-main">
-
-        {/* Breadcrumb */}
-        <div className="vc-breadcrumb">
-          <span>Course</span> /
-          <span>{content.subtopicId}</span> /
-          <span>{content.title}</span>
-        </div>
-
+        {/* Title */}
         <h1 className="vc-title">{content.title}</h1>
 
-        {/* Video if exists */}
+        {/* Video */}
         {content.videoUrl && (
           <div className="vc-video-box">
             <iframe
@@ -84,12 +87,16 @@ function ViewContent() {
         {content.images?.length > 0 && (
           <div className="vc-gallery">
             {content.images.map((img, idx) => (
-              <img key={idx} src={`http://localhost:5000/${img}`} alt="" />
+              <img
+                key={idx}
+                src={`http://localhost:5000/${img}`}
+                alt=""
+              />
             ))}
           </div>
         )}
 
-        {/* Main content HTML */}
+        {/* Main HTML Content */}
         <div
           className="vc-html"
           dangerouslySetInnerHTML={{ __html: content.fullContent }}
@@ -117,27 +124,6 @@ function ViewContent() {
             <p>{content.notes}</p>
           </div>
         )}
-
-        {/* Navigation Buttons */}
-        <div className="vc-nav-buttons">
-          {prevContent && (
-            <button
-              className="vc-btn"
-              onClick={() => navigate(`/content/${prevContent._id}`)}
-            >
-              ← Previous: {prevContent.title}
-            </button>
-          )}
-          {nextContent && (
-            <button
-              className="vc-btn"
-              onClick={() => navigate(`/content/${nextContent._id}`)}
-            >
-              Next: {nextContent.title} →
-            </button>
-          )}
-        </div>
-
       </main>
     </div>
   );
