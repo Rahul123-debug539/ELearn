@@ -32,7 +32,10 @@ function ManageCategories() {
       if (editing) {
         const { data } = await api.put(`/api/categories/${editing}`, { name });
 
-        if (data.status) toast.success("Category updated");
+        if (data.status) {
+          toast.success("Category updated");
+          navigate("/admin");
+        }
       }else {
         const { data } = await api.post("/api/categories/add", { name });
 

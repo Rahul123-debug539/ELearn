@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function ManageTopics() {
   const [categories, setCategories] = useState([]);
