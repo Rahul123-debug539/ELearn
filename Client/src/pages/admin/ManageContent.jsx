@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./ManageContent.css"
+import { useNavigate } from "react-router-dom";
 
 function ManageContent() {
   const [categories, setCategories] = useState([]);
@@ -20,6 +21,8 @@ function ManageContent() {
   const [images, setImages] = useState([]);
   const [adImage, setAdImage] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
+
+  const navigate = useNavigate();
 
   // Load categories
   useEffect(() => {
@@ -72,7 +75,7 @@ function ManageContent() {
 
       if (res.data.status) {
         toast.success("Content Added Successfully!");
-
+        navigate("/admin");
         setTitle("");
         setFullContent("");
         setImages([]);
