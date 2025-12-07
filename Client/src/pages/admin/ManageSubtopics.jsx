@@ -11,21 +11,21 @@ function ManageSubtopics() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    api.get("/categories").then((res) => {
+    api.get("/api/categories").then((res) => {
       if (res.data.status) setCategories(res.data.categories);
     });
   }, []);
 
   const loadTopics = () => {
     if (!selectedCat) return;
-    api.get(`/topics/${selectedCat}`).then((res) => {
+    api.get(`/api/topics/${selectedCat}`).then((res) => {
       if (res.data.status) setTopics(res.data.topics);
     });
   };
 
   const loadSubtopics = () => {
     if (!selectedTopic) return;
-    api.get(`/subtopics/${selectedTopic}`).then((res) => {
+    api.get(`/api/subtopics/${selectedTopic}`).then((res) => {
       if (res.data.status) setSubtopics(res.data.subtopics);
     });
   };
@@ -36,7 +36,7 @@ function ManageSubtopics() {
   const addSubtopic = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/subtopics/add", {
+      const res = await api.post("/api/subtopics/add", {
         topicId: selectedTopic,
         name,
       });
@@ -52,7 +52,7 @@ function ManageSubtopics() {
 
   const deleteSubtopic = async (id) => {
     if (!confirm("Delete this subtopic?")) return;
-    const res = await api.delete(`/subtopics/${id}`);
+    const res = await api.delete(`/api/subtopics/${id}`);
     if (res.data.status) {
       toast.success("Subtopic deleted");
       loadSubtopics();
