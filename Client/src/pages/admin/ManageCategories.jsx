@@ -34,7 +34,10 @@ function ManageCategories() {
       }else {
         const { data } = await api.post("/api/categories/add", { name });
 
-        if (data.status) toast.success("Category added");
+        if (data.status) {
+          toast.success("Category added");
+          navigate("/admin");
+        }
       }
 
       setName("");
