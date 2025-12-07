@@ -2,6 +2,8 @@ import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useRef, useState } from "react";
+import api from "../../api/api";
+
 
 function Navbar({ onLoginClick }) {
   const { user, logout, setUser } = useAuth();
@@ -57,13 +59,9 @@ function Navbar({ onLoginClick }) {
   async function fetchResults(q) {
     setLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/search?q=${encodeURIComponent(q)}`
-      );
+      const res = await api.get(`/api/search?q=${encodeURIComponent(q)}`);
 
-      if (!res.ok) throw new Error("Search failed");
-
-      const data = await res.json();
+      const data = res.data;
 
       setResults({
         categories: data.categories || [],
@@ -77,6 +75,7 @@ function Navbar({ onLoginClick }) {
     }
     setLoading(false);
   }
+
 
   // ==============================
   // 🔄 Local fallback
