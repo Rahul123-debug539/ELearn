@@ -38,7 +38,7 @@ function Courses() {
         {categories.map((cat) => (
           <Link
             key={cat._id}
-            to={`/api/category/${cat._id}`}
+            to={`/category/${cat._id}`}
             style={{
               background: "#0f172a",
               padding: "1.2rem",
