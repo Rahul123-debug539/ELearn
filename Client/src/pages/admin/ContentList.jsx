@@ -17,21 +17,21 @@ function ContentList() {
   const [selectedSub, setSelectedSub] = useState("");
 
   useEffect(() => {
-    api.get("/categories").then((res) => {
+    api.get("/api/categories").then((res) => {
       if (res.data.status) setCategories(res.data.categories);
     });
   }, []);
 
   useEffect(() => {
     if (!selectedCat) return;
-    api.get(`/topics/${selectedCat}`).then((res) => {
+    api.get(`/api/topics/${selectedCat}`).then((res) => {
       if (res.data.status) setTopics(res.data.topics);
     });
   }, [selectedCat]);
 
   useEffect(() => {
     if (!selectedTopic) return;
-    api.get(`/subtopics/${selectedTopic}`).then((res) => {
+    api.get(`/api/subtopics/${selectedTopic}`).then((res) => {
       if (res.data.status) setSubtopics(res.data.subtopics);
     });
   }, [selectedTopic]);
@@ -43,7 +43,7 @@ function ContentList() {
 
   const loadContentList = async () => {
     try {
-      const res = await api.get(`/content/${selectedSub}`);
+      const res = await api.get(`/api/content/${selectedSub}`);
       if (res.data.status) setContentList(res.data.content);
     } catch {
       toast.error("Failed to load content");
@@ -53,7 +53,7 @@ function ContentList() {
   const handleDelete = async (contentId) => {
     try {
       const res = await api.delete(
-        `/content/delete/${contentId}/${selectedSub}`
+        `/api/content/delete/${contentId}/${selectedSub}`
       );
 
       if (res.data.status) {
