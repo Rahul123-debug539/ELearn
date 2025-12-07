@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import api from "../../api/api";
 import { toast } from "react-toastify";
 import "./AdminDashboard.css";
+import { useNavigate } from "react-router-dom";
 
 function ManageCategories() {
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [editing, setEditing] = useState(null);
+  const navigate = useNavigate();
 
   // Load categories on mount
   useEffect(() => {
