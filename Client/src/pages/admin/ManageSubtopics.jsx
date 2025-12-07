@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function ManageSubtopics() {
   const [categories, setCategories] = useState([]);
@@ -9,6 +10,7 @@ function ManageSubtopics() {
   const [selectedCat, setSelectedCat] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [name, setName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/api/categories").then((res) => {
@@ -44,6 +46,7 @@ function ManageSubtopics() {
         toast.success("Subtopic added");
         setName("");
         loadSubtopics();
+        navigate("/admin");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Error adding subtopic");
@@ -56,6 +59,7 @@ function ManageSubtopics() {
     if (res.data.status) {
       toast.success("Subtopic deleted");
       loadSubtopics();
+      navigate("/admin");
     }
   };
 

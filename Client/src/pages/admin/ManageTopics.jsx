@@ -8,6 +8,7 @@ function ManageTopics() {
   const [selectedCat, setSelectedCat] = useState("");
   const [topics, setTopics] = useState([]);
   const [name, setName] = useState("");
+  const navigate = useNavigate();
 
   const loadCategories = async () => {
     const res = await api.get("/api/categories");
@@ -39,6 +40,7 @@ function ManageTopics() {
         toast.success("Topic added");
         setName("");
         loadTopics();
+        navigate("/admin");
       }
     } catch (err) {
       toast.error("Error adding topic");
@@ -51,6 +53,7 @@ function ManageTopics() {
     if (res.data.status) {
       toast.success("Topic deleted");
       loadTopics();
+      navigate("/admin");
     }
   };
 
