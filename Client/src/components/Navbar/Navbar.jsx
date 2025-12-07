@@ -304,7 +304,10 @@ function Navbar({ onLoginClick }) {
                         className="search-item"
                         onClick={() => {
                           setSearchOpen(false);
-                          navigate(`/content/${item._id}`);
+                          if (section === "categories") navigate(`/category/${item._id}`);
+                          if (section === "topics") navigate(`/topic/${item._id}`);
+                          if (section === "content") navigate(`/content/${item._id}`);
+
                         }}
                       >
                         {item.title || item.name}

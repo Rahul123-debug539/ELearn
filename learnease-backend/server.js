@@ -3,6 +3,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 const connectDB = require("./config/db");
+const searchRoutes = require("./routes/searchRoutes");
+
 
 dotenv.config();
 
@@ -30,6 +32,15 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/topics", topicRoutes);
 app.use("/api/subtopics", subtopicRoutes);
 app.use("/api/content", contentRoutes);
+app.use("/api/search", searchRoutes);
+// ✅ 404 API HANDLER (When route not found)
+app.use((req, res) => {
+  res.status(404).json({
+    status: false,
+    message: "API Route Not Found"
+  });
+});
+
 
 // Test route
 app.get("/", (req, res) => {

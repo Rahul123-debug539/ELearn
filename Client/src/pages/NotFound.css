@@ -1,0 +1,117 @@
+.nf-wrapper {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #020617, #000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  font-family: "Inter", sans-serif;
+}
+
+.nf-card {
+  z-index: 2;
+  width: 90%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 50px 35px;
+  text-align: center;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+  animation: floatIn 0.8s ease;
+}
+
+.nf-code {
+  font-size: 120px;
+  font-weight: 900;
+  background: linear-gradient(45deg, #22c55e, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.nf-title {
+  font-size: 28px;
+  margin-top: -10px;
+}
+
+.nf-text {
+  margin-top: 14px;
+  font-size: 15px;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.nf-actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nf-btn {
+  padding: 12px 26px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: 0.3s;
+}
+
+.nf-btn.outline {
+  background: transparent;
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+
+.nf-btn.outline:hover {
+  background: #38bdf8;
+  color: black;
+}
+
+.nf-btn.solid {
+  background: #22c55e;
+  color: black;
+}
+
+.nf-btn.solid:hover {
+  background: #16a34a;
+}
+
+/* Animated background blobs */
+.nf-blob {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.5;
+}
+
+.nf-blob.one {
+  background: #22c55e;
+  top: -100px;
+  left: -100px;
+}
+
+.nf-blob.two {
+  background: #38bdf8;
+  bottom: -100px;
+  right: -100px;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

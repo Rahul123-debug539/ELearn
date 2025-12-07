@@ -12,15 +12,12 @@ function toYouTubeEmbed(url = "") {
 
     if (url.includes("youtube.com/embed")) return url;
 
-    // youtu.be short link
     const short = url.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
     if (short?.[1]) return `https://www.youtube.com/embed/${short[1]}`;
 
-    // youtube.com/watch?v=
     const long = url.match(/[?&]v=([A-Za-z0-9_-]{11})/);
     if (long?.[1]) return `https://www.youtube.com/embed/${long[1]}`;
 
-    // last segment as ID
     const last = url.split("/").pop();
     if (last?.length === 11) return `https://www.youtube.com/embed/${last}`;
 
@@ -30,7 +27,6 @@ function toYouTubeEmbed(url = "") {
   }
 }
 
-
 /* --------------------------------------------------
    ADD CONTENT  (ADMIN)
 -------------------------------------------------- */
@@ -39,7 +35,7 @@ exports.addContent = async (req, res) => {
     let {
       subtopicId,
       title,
-      fullContent,   // WYSIWYG HTML CONTENT
+      fullContent,
       code = "",
       notes = "",
       examples = "",
@@ -47,7 +43,6 @@ exports.addContent = async (req, res) => {
       videoUrl = ""
     } = req.body;
 
-    // VALIDATION (NEW)
     if (!subtopicId || !title || !fullContent) {
       return res.status(400).json({
         status: false,
@@ -63,16 +58,15 @@ exports.addContent = async (req, res) => {
     }
 
     const files = req.files || {};
-
     const images = (files.images || []).map(f => f.path);
     const adImage = files.adImage?.[0]?.path || "";
 
     const embedVideo = toYouTubeEmbed(videoUrl);
 
-    const created = await Content.create({
+    await Content.create({
       subtopicId,
       title,
-      fullContent, // save HTML
+      fullContent,
       code,
       notes,
       examples,
@@ -95,8 +89,6 @@ exports.addContent = async (req, res) => {
     res.status(500).json({ status: false, message: "Server error" });
   }
 };
-
-
 
 /* --------------------------------------------------
    GET ALL CONTENT OF SUBTOPIC  
@@ -123,8 +115,6 @@ exports.getContent = async (req, res) => {
   }
 };
 
-
-
 /* --------------------------------------------------
    UPDATE CONTENT (ADMIN)
 -------------------------------------------------- */
@@ -142,17 +132,14 @@ exports.updateContent = async (req, res) => {
     let updates = req.body || {};
     const files = req.files || {};
 
-    // update images
     if (files.images?.length > 0) {
       updates.images = files.images.map(f => f.path);
     }
 
-    // update adImage
     if (files.adImage?.[0]) {
       updates.adImage = files.adImage[0].path;
     }
 
-    // convert new YouTube link
     if (updates.videoUrl) {
       updates.videoUrl = toYouTubeEmbed(updates.videoUrl);
     }
@@ -173,8 +160,6 @@ exports.updateContent = async (req, res) => {
   }
 };
 
-
-
 /* --------------------------------------------------
    DELETE CONTENT (ADMIN)
 -------------------------------------------------- */
@@ -186,6 +171,13 @@ exports.deleteContent = async (req, res) => {
       return res.status(400).json({
         status: false,
         message: "Invalid contentId"
+      });
+    }
+
+    if (!mongoose.isValidObjectId(subtopicId)) {
+      return res.status(400).json({
+        status: false,
+        message: "Invalid subtopicId"
       });
     }
 
@@ -207,7 +199,7 @@ exports.deleteContent = async (req, res) => {
 };
 
 /* --------------------------------------------------
-   GET SINGLE CONTENT (FOR EDIT PAGE)
+   GET SINGLE CONTENT (ONE & ONLY SAFE VERSION ✅)
 -------------------------------------------------- */
 exports.getSingleContent = async (req, res) => {
   try {
@@ -240,19 +232,29 @@ exports.getSingleContent = async (req, res) => {
   }
 };
 
-exports.getSingleContent = async (req, res) => {
+// ✅ GET RELATED CONTENT (BY TITLE KEYWORDS)
+exports.getRelatedContent = async (req, res) => {
   try {
-    const content = await Content.findById(req.params.id);
+    const { contentId } = req.params;
 
-    if (!content) {
+    const current = await Content.findById(contentId);
+    if (!current) {
       return res.status(404).json({ status: false, message: "Content not found" });
     }
 
-    res.json({ status: true, content });
+    // Title ke keywords nikalna
+    const words = current.title.split(" ").filter(w => w.length > 2);
+    const regex = new RegExp(words.join("|"), "i");
+
+    const related = await Content.find({
+      _id: { $ne: contentId },     // same content exclude
+      title: regex
+    }).limit(8);
+
+    res.json({ status: true, related });
+
   } catch (err) {
-    console.log("Single content error:", err.message);
+    console.log("RELATED CONTENT ERROR:", err);
     res.status(500).json({ status: false, message: "Server error" });
   }
 };
-
-
