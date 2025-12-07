@@ -4,9 +4,10 @@ import Contact from "./Contact";
 import Courses from "./Courses";
 import Footer from "../components/Footer";
 import "./Home.css";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Mouse parallax effect for blobs
     const handleMouseMove = (e) => {
@@ -40,7 +41,7 @@ function Home() {
             for students, beginners and developers.
           </p>
 
-          <button className="hero-btn">
+          <button className="hero-btn" onClick={() => navigate("/courses")}>
             Start Learning →
           </button>
 
