@@ -44,10 +44,6 @@ function Home() {
           <button className="hero-btn" onClick={() => navigate("/courses")}>
             Start Learning →
           </button>
-
-          <p className="stats-line">
-            📈 More than 140+ new lessons added recently.
-          </p>
         </div>
 
         <div className="hero-right">
