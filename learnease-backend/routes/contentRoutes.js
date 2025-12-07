@@ -3,25 +3,22 @@ const express = require("express");
 const router = express.Router();
 
 const upload = require("../middleware/upload");
-const Content = require("../models/Content");
-
-const {
-  addContent,
-  getContent,
-  getSingleContent,
-  updateContent,
-  deleteContent
-} = require("../controllers/contentController");
-
 const { verifyToken } = require("../middleware/verifyToken");
 const { isAdmin } = require("../middleware/isAdmin");
 
+const Content = require("../models/Content");
+const {
+  addContent,
+  updateContent,
+  deleteContent,
+  getContent,
+  getSingleContent
+} = require("../controllers/contentController");
 
-/* =====================================================
-    ADMIN ROUTES (STATIC ROUTES FIRST)
-===================================================== */
+/* =============================
+   ADMIN ROUTES
+============================= */
 
-// ADD CONTENT
 router.post(
   "/add",
   verifyToken,
@@ -33,7 +30,6 @@ router.post(
   addContent
 );
 
-// UPDATE CONTENT
 router.put(
   "/update/:contentId",
   verifyToken,
@@ -45,7 +41,6 @@ router.put(
   updateContent
 );
 
-// DELETE CONTENT
 router.delete(
   "/delete/:contentId/:subtopicId",
   verifyToken,
@@ -53,48 +48,41 @@ router.delete(
   deleteContent
 );
 
+/* =============================
+   PUBLIC ROUTES
+============================= */
 
-/* =====================================================
-    PUBLIC STATIC ROUTES (KEEP ABOVE DYNAMIC ROUTES)
-===================================================== */
-
-// GET DEFAULT CONTENT BY CATEGORY
-router.get("/category/:categoryId", async (req, res) => {
-  try {
-    const content = await Content.findOne({
-      categoryId: req.params.categoryId,
-      isDefault: true
-    });
-
-    if (!content)
-      return res.json({ status: false, message: "No default content" });
-
-    res.json({ status: true, content });
-  } catch (err) {
-    res.status(500).json({ status: false });
-  }
-});
-
-// GET CONTENT DETAIL BY CONTENT ID
+// ⭐ GET CONTENT DETAIL BY ID (for view page)
 router.get("/detail/:contentId", async (req, res) => {
   try {
-    const c = await Content.findById(req.params.contentId);
-    res.json({ status: true, content: c });
+    const content = await Content.findById(req.params.contentId);
+
+    if (!content) {
+      return res.status(404).json({ status: false, message: "Content not found" });
+    }
+
+    res.json({ status: true, content });
   } catch {
     res.status(500).json({ status: false });
   }
 });
 
-// ⭐ GET SINGLE CONTENT FOR EDIT PAGE
-router.get("/single/:contentId", getSingleContent);
+// ⭐ GET LIST OF CONTENT BY SUBTOPIC
+router.get("/list/:subtopicId", async (req, res) => {
+  try {
+    const list = await Content.find({ subtopicId: req.params.subtopicId })
+      .sort({ order: 1 });
 
+    res.json({ status: true, list });
+  } catch {
+    res.status(500).json({ status: false });
+  }
+});
 
-/* =====================================================
-    DYNAMIC ROUTE (KEEP LAST)
-===================================================== */
-
-// GET ALL CONTENT OF SUBTOPIC (DYNAMIC ROUTE)
+// LAST ROUTE – FOR SAFETY
 router.get("/:subtopicId", getContent);
+
+router.get("/single/:id", getSingleContent);
 
 
 module.exports = router;

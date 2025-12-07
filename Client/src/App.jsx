@@ -24,6 +24,8 @@ import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import Register from "./pages/Register";
 import AdminRegister from "./pages/AdminRegister";
 import Footer from "./components/Footer";
+import ViewContent from "./pages/ViewContent";
+
 
 import { useAuth } from "./context/AuthContext";
 
@@ -62,6 +64,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin/create" element={<AdminRegister />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
+        <Route path="/content/:contentId" element={<ViewContent />} />
+
+
 
         {/* ADMIN ROUTES */}
         <Route

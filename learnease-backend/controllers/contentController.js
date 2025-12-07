@@ -240,3 +240,19 @@ exports.getSingleContent = async (req, res) => {
   }
 };
 
+exports.getSingleContent = async (req, res) => {
+  try {
+    const content = await Content.findById(req.params.id);
+
+    if (!content) {
+      return res.status(404).json({ status: false, message: "Content not found" });
+    }
+
+    res.json({ status: true, content });
+  } catch (err) {
+    console.log("Single content error:", err.message);
+    res.status(500).json({ status: false, message: "Server error" });
+  }
+};
+
+
