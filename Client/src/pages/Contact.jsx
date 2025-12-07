@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 function Contact() {
   return (
     <div
@@ -20,7 +18,7 @@ function Contact() {
           borderRadius: "1rem",
           border: "1px solid #1f2937",
           width: "100%",
-          maxWidth: "500px",
+          maxWidth: "520px",
         }}
       >
         <h1
@@ -33,11 +31,11 @@ function Contact() {
           Contact Us
         </h1>
 
-        {/* ✅ GOOGLE FORM EMBED */}
+        {/* ✅ GOOGLE FORM – REAL SUBMISSION */}
         <iframe
           src="https://docs.google.com/forms/d/e/1FAIpQLSd-E6Nv9fajmXu8RtOwfZGspKyc4R6mjChefwU4FCmPVuQtCw/viewform?embedded=true"
           width="100%"
-          height="520"
+          height="700"
           frameBorder="0"
           marginHeight="0"
           marginWidth="0"
