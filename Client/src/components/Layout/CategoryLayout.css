@@ -1,50 +1,67 @@
-/* ---------- MAIN LAYOUT ---------- */
+/* ============ LAYOUT WRAPPER ============ */
 .cat-layout {
   display: flex;
-  background: #ffffff;
-  color: #00050e;
-  min-height: 110vh;
+  min-height: 100vh;
+  background: #020617;
 }
 
-/* ---------- SIDEBAR (NO FOOTER OVERLAP) ---------- */
+/* ============ SIDEBAR (PROPER STICKY) ============ */
 .cat-sidebar {
-  width: 260px;
-  height: calc(110vh - 60px);
-  /* Footer ki height minus */
   position: sticky;
-  /* NOT fixed */
-  top: 0;
+  top: 120px;
+  /* ✅ navbar + secondary navbar exactly */
+
+  width: 260px;
+  height: calc(100vh - 120px);
+
+  background: #020617;
+  color: #e5e7eb;
+
+  padding: 1.5rem;
+
   overflow-y: auto;
-  background-color: #1e293b;
-  color: white;
-  padding: 2rem;
-  box-sizing: border-box;
-  border-right: 1px solid #1e293b;
+
+  border-right: 1px solid #1f2937;
 }
 
-/* ---------- CONTENT AREA ---------- */
+/* ============ CONTENT ============ */
 .cat-content {
   flex: 1;
-  padding: 1rem 1.5rem;
-  min-height: calc(100vh - 60px);
-  overflow-y: auto;
-  box-sizing: border-box;
+  padding: 2rem;
+  background: #ffffff;
+  color: #00050e;
+
+  min-height: 150vh;
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 800px) {
+/* ============ SCROLLBAR DESIGN ============ */
+.cat-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cat-sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #22d3ee, #6366f1);
+  border-radius: 10px;
+}
+
+.cat-sidebar::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+/* ============ MOBILE FIX ============ */
+@media (max-width: 900px) {
   .cat-layout {
     flex-direction: column;
   }
 
   .cat-sidebar {
-    width: 100%;
-    height: auto;
-    max-height: none;
     position: relative;
-  }
+    top: 0;
 
-  .cat-content {
-    margin-left: 0;
+    width: 100%;
+    height: 250px;
+
+    border-right: none;
+    border-bottom: 1px solid #1f2937;
   }
 }
