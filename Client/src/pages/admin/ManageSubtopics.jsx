@@ -10,6 +10,8 @@ function ManageSubtopics() {
   const [selectedCat, setSelectedCat] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [name, setName] = useState("");
+  const [editId, setEditId] = useState(null);   // ✅ 1️⃣ EDIT STATE
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,33 +37,53 @@ function ManageSubtopics() {
   useEffect(loadTopics, [selectedCat]);
   useEffect(loadSubtopics, [selectedTopic]);
 
+  // ✅ 2️⃣ ADD / UPDATE SUBTOPIC
   const addSubtopic = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/api/subtopics/add", {
-        topicId: selectedTopic,
-        name,
-      });
-      if (res.data.status) {
-        toast.success("Subtopic added");
-        navigate("/admin");
-        setName("");
-        loadSubtopics();
-        
+      let res;
+
+      if (editId) {
+        // ✅ UPDATE
+        res = await api.put(`/api/subtopics/${editId}`, { name });
+
+        if (res.data.status) {
+          toast.success("Subtopic updated");
+          setEditId(null);
+        }
+      } else {
+        // ✅ ADD
+        res = await api.post("/api/subtopics/add", {
+          topicId: selectedTopic,
+          name,
+        });
+
+        if (res.data.status) {
+          toast.success("Subtopic added");
+        }
       }
+
+      setName("");
+      loadSubtopics();
+      // navigate("/admin");  ❌ optional (tum chaho to hata ke yahin live update dikhao)
     } catch (err) {
-      toast.error(err.response?.data?.message || "Error adding subtopic");
+      toast.error(err.response?.data?.message || "Error saving subtopic");
     }
   };
 
+  // ✅ 3️⃣ EDIT HANDLER
+  const editSubtopic = (subtopic) => {
+    setName(subtopic.name);
+    setEditId(subtopic._id);
+  };
+
+  // ✅ DELETE
   const deleteSubtopic = async (id) => {
     if (!confirm("Delete this subtopic?")) return;
     const res = await api.delete(`/api/subtopics/${id}`);
     if (res.data.status) {
       toast.success("Subtopic deleted");
-      navigate("/admin");
       loadSubtopics();
-      
     }
   };
 
@@ -108,7 +130,9 @@ function ManageSubtopics() {
               required
             />
 
-            <button type="submit">Add Subtopic</button>
+            <button type="submit">
+              {editId ? "Update Subtopic" : "Add Subtopic"} {/* ✅ */}
+            </button>
           </form>
 
           <table className="admin-table">
@@ -125,7 +149,21 @@ function ManageSubtopics() {
                   <td>{s.name}</td>
                   <td>{s.slug}</td>
                   <td>
-                    <button className="delete-btn" onClick={() => deleteSubtopic(s._id)}>
+                    {/* ✅ 4️⃣ EDIT BUTTON */}
+                    <button
+                      type="button"
+                      className="edit-btn"
+                      onClick={() => editSubtopic(s)}
+                    >
+                      Edit
+                    </button>
+
+                    {/* ✅ DELETE BUTTON */}
+                    <button
+                      type="button"
+                      className="delete-btn"
+                      onClick={() => deleteSubtopic(s._id)}
+                    >
                       Delete
                     </button>
                   </td>
