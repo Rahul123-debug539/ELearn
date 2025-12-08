@@ -4,7 +4,9 @@ const router = express.Router();
 const {
   addSubtopic,
   getSubtopics,
-  deleteSubtopic
+  deleteSubtopic, 
+  updateSubtopic,
+
 } = require("../controllers/subtopicController");
 
 const { verifyToken } = require("../middleware/verifyToken");
@@ -12,7 +14,9 @@ const { isAdmin } = require("../middleware/isAdmin");
 
 // Admin-only
 router.post("/add", verifyToken, isAdmin, addSubtopic);
+router.put("/:id", verifyToken, isAdmin, updateSubtopic);
 router.delete("/:id", verifyToken, isAdmin, deleteSubtopic);
+
 
 // Public - subtopics of a topic
 router.get("/:topicId", getSubtopics);

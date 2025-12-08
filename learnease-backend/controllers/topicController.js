@@ -52,3 +52,39 @@ exports.deleteTopic = async (req, res) => {
     res.status(500).json({ status: false, message: "Server error" });
   }
 };
+
+exports.updateTopic = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const slug = name
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    const updatedTopic = await Topic.findByIdAndUpdate(
+      req.params.id,
+      { name, slug },
+      { new: true }
+    );
+
+    if (!updatedTopic) {
+      return res.json({
+        status: false,
+        message: "Topic not found",
+      });
+    }
+
+    res.json({
+      status: true,
+      message: "Topic updated successfully",
+      topic: updatedTopic,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "Error updating topic",
+    });
+  }
+};
+

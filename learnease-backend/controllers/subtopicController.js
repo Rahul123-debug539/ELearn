@@ -42,6 +42,89 @@ exports.getSubtopics = async (req, res) => {
   }
 };
 
+exports.addSubtopic = async (req, res) => {
+  try {
+    const { topicId, name } = req.body;
+
+    const slug = name
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    const newSubtopic = new Subtopic({
+      topicId,
+      name,
+      slug,
+    });
+
+    await newSubtopic.save();
+
+    res.json({
+      status: true,
+      message: "Subtopic added successfully",
+      subtopic: newSubtopic,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "Error adding subtopic",
+    });
+  }
+};
+
+// ✅ GET SUBTOPICS BY TOPIC
+exports.getSubtopics = async (req, res) => {
+  try {
+    const subtopics = await Subtopic.find({ topicId: req.params.topicId });
+
+    res.json({
+      status: true,
+      subtopics,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "Error fetching subtopics",
+    });
+  }
+};
+
+// ✅ UPDATE SUBTOPIC
+exports.updateSubtopic = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const slug = name
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    const updatedSubtopic = await Subtopic.findByIdAndUpdate(
+      req.params.id,
+      { name, slug },
+      { new: true }
+    );
+
+    if (!updatedSubtopic) {
+      return res.json({
+        status: false,
+        message: "Subtopic not found",
+      });
+    }
+
+    res.json({
+      status: true,
+      message: "Subtopic updated successfully",
+      subtopic: updatedSubtopic,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "Error updating subtopic",
+    });
+  }
+};
+
 // DELETE SUBTOPIC (Admin)
 exports.deleteSubtopic = async (req, res) => {
   try {

@@ -8,6 +8,8 @@ function ManageTopics() {
   const [selectedCat, setSelectedCat] = useState("");
   const [topics, setTopics] = useState([]);
   const [name, setName] = useState("");
+  const [editId, setEditId] = useState(null); 
+
   const navigate = useNavigate();
 
   const loadCategories = async () => {
@@ -29,24 +31,47 @@ function ManageTopics() {
     loadTopics();
   }, [selectedCat]);
 
+  //  ADD / UPDATE TOPIC
   const addTopic = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await api.post("/api/topics/add", {
-        categoryId: selectedCat,
-        name,
-      });
-      if (res.data.status) {
-        toast.success("Topic added");
-        setName("");
-        loadTopics();
-        navigate("/admin");
+      let res;
+
+      if (editId) {
+        res = await api.put(`/api/topics/${editId}`, { name });
+
+
+        if (res.data.status) {
+          toast.success("Topic updated");
+          setEditId(null);
+        }
+      } else {
+        res = await api.post("/api/topics/add", {
+          categoryId: selectedCat,
+          name,
+        });
+
+        if (res.data.status) {
+          toast.success("Topic added");
+        }
       }
+
+      setName("");
+      loadTopics();
+      navigate("/admin");
     } catch (err) {
-      toast.error("Error adding topic");
+      toast.error("Error saving topic");
     }
   };
 
+  //  EDIT BUTTON HANDLER
+  const editTopic = (topic) => {
+    setName(topic.name);  
+    setEditId(topic._id);
+  };
+
+  // DELETE
   const deleteTopic = async (id) => {
     if (!confirm("Delete this topic?")) return;
     const res = await api.delete(`/api/topics/${id}`);
@@ -85,7 +110,9 @@ function ManageTopics() {
               required
             />
 
-            <button type="submit">Add Topic</button>
+            <button type="submit">
+              {editId ? "Update Topic" : "Add Topic"}
+            </button>
           </form>
 
           <table className="admin-table">
@@ -102,7 +129,20 @@ function ManageTopics() {
                   <td>{t.name}</td>
                   <td>{t.slug}</td>
                   <td>
-                    <button className="delete-btn" onClick={() => deleteTopic(t._id)}>
+                    {/* EDIT BUTTON */}
+                    <button
+                      type="button" 
+                      className="edit-btn"
+                      onClick={() => editTopic(t)}
+                    >
+                      Edit
+                    </button>
+
+                    {/* DELETE BUTTON */}
+                    <button
+                      className="delete-btn"
+                      onClick={() => deleteTopic(t._id)}
+                    >
                       Delete
                     </button>
                   </td>
