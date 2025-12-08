@@ -4,10 +4,12 @@ import { useAuth } from "../../context/AuthContext";
 import { useEffect, useRef, useState } from "react";
 import api from "../../api/api";
 
+
 function Navbar({ onLoginClick }) {
   const { user, logout, setUser } = useAuth();
   const navigate = useNavigate();
 
+  // States
   const [profileOpen, setProfileOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -25,10 +27,14 @@ function Navbar({ onLoginClick }) {
   });
   const [loading, setLoading] = useState(false);
 
+  // Refs
   const profileRef = useRef(null);
   const drawerRef = useRef(null);
   const searchInputRef = useRef(null);
 
+  // ==============================
+  // 🔍 Debounced Search
+  // ==============================
   useEffect(() => {
     if (!searchOpen || query.trim() === "") {
       setResults({
@@ -47,10 +53,14 @@ function Navbar({ onLoginClick }) {
     return () => clearTimeout(timer);
   }, [query]);
 
+  // ==============================
+  // 🔍 Fetch Results (Backend)
+  // ==============================
   async function fetchResults(q) {
     setLoading(true);
     try {
       const res = await api.get(`/api/search?q=${encodeURIComponent(q)}`);
+
       const data = res.data;
 
       setResults({
@@ -60,11 +70,16 @@ function Navbar({ onLoginClick }) {
         content: data.content || [],
       });
     } catch (err) {
+      console.log("Search backend failed — using fallback");
       localFallback(q);
     }
     setLoading(false);
   }
 
+
+  // ==============================
+  // 🔄 Local fallback
+  // ==============================
   function localFallback(q) {
     const dummy = {
       courses: [
@@ -85,24 +100,27 @@ function Navbar({ onLoginClick }) {
     });
   }
 
-  // ✅ OUTSIDE CLICK FIX
+  // ==============================
+  // ✋ Outside click close
+  // ==============================
   useEffect(() => {
     const handler = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setProfileOpen(false);
       }
-
       if (drawerRef.current && !drawerRef.current.contains(e.target)) {
         if (!e.target.closest(".hamburger")) {
           setDrawerOpen(false);
         }
       }
     };
-
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // ==============================
+  // 📸 Upload photo
+  // ==============================
   const uploadPhoto = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -117,12 +135,18 @@ function Navbar({ onLoginClick }) {
     reader.readAsDataURL(file);
   };
 
+  // ==============================
+  // ❌ Remove photo
+  // ==============================
   const removePhoto = () => {
     localStorage.removeItem("user_photo");
     setPhoto(null);
     if (setUser) setUser({ ...user, photo: null });
   };
 
+  // ==============================
+  // 🚪 Logout
+  // ==============================
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -130,10 +154,12 @@ function Navbar({ onLoginClick }) {
 
   return (
     <>
+      {/* ==========================
+          NAVBAR
+      ========================== */}
       <nav className="nav">
         <div className="nav-left">
-          {/* ✅ TOGGLE FIX */}
-          <button className="hamburger" onClick={() => setDrawerOpen(!drawerOpen)}>
+          <button className="hamburger" onClick={() => setDrawerOpen(true)}>
             ☰
           </button>
 
@@ -154,6 +180,15 @@ function Navbar({ onLoginClick }) {
         </div>
 
         <div className="nav-right">
+          <button
+            className="icon-btn"
+            onClick={() => {
+              setSearchOpen(true);
+              setTimeout(() => searchInputRef.current?.focus(), 200);
+            }}
+          >
+            🔍
+          </button>
 
           {!user && (
             <button className="nav-btn" onClick={onLoginClick}>
@@ -163,15 +198,24 @@ function Navbar({ onLoginClick }) {
 
           {user && (
             <div className="profile-area" ref={profileRef}>
-              <div className="avatar" onClick={() => setProfileOpen((p) => !p)}>
-                {photo ? <img src={photo} alt="" /> : user.name?.charAt(0)?.toUpperCase()}
+              <div
+                className="avatar"
+                onClick={() => setProfileOpen((p) => !p)}
+              >
+                {photo ? (
+                  <img src={photo} alt="" />
+                ) : (
+                  user.name?.charAt(0)?.toUpperCase()
+                )}
               </div>
 
               {profileOpen && (
                 <div className="profile-dropdown">
                   <div className="profile-info">
                     <div className="profile-photo-box">
-                      {photo ? <img src={photo} alt="profile" /> : (
+                      {photo ? (
+                        <img src={photo} alt="profile" />
+                      ) : (
                         <div className="photo-fallback">
                           {user.name?.charAt(0)?.toUpperCase()}
                         </div>
@@ -202,22 +246,87 @@ function Navbar({ onLoginClick }) {
         </div>
       </nav>
 
-      {/* ✅ MOBILE DRAWER AUTO CLOSE FIX */}
+      {/* ==========================
+          MOBILE DRAWER
+      ========================== */}
       <div className={`drawer ${drawerOpen ? "open" : ""}`} ref={drawerRef}>
         <div className="drawer-inner">
           <button className="close-drawer" onClick={() => setDrawerOpen(false)}>
             ✖
           </button>
 
-          <Link to="/" className="drawer-link" onClick={() => setDrawerOpen(false)}>Home</Link>
-          <Link to="/About" className="drawer-link" onClick={() => setDrawerOpen(false)}>About</Link>
-          <Link to="/Contact" className="drawer-link" onClick={() => setDrawerOpen(false)}>Contact</Link>
-          <Link to="/Courses" className="drawer-link" onClick={() => setDrawerOpen(false)}>Courses</Link>
+          <Link to="/" className="drawer-link" onClick={()=>{setDrawerOpen(false)}}>Home</Link>
+          <Link to="/About" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>About</Link>
+          <Link to="/Contact" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Contact</Link>
+          <Link to="/Courses" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Courses</Link>
           {user?.role === "admin" && (
-            <Link to="/admin" className="drawer-link" onClick={() => setDrawerOpen(false)}>Admin</Link>
+            <Link to="/admin" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Admin</Link>
           )}
         </div>
       </div>
+
+      {/* ==========================
+          SEARCH OVERLAY
+      ========================== */}
+      {searchOpen && (
+        <div className="search-overlay">
+          <div className="search-top">
+            <button className="back-btn" onClick={() => setSearchOpen(false)}>
+              ✖
+            </button>
+
+            <input
+              ref={searchInputRef}
+              className="search-input"
+              placeholder="Search courses, categories, topics..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+
+            {query && (
+              <button className="clear-btn" onClick={() => setQuery("")}>
+                ✖
+              </button>
+            )}
+          </div>
+
+          <div className="search-body">
+            {loading && <p>Searching...</p>}
+
+            {/* RENDER EACH SECTION */}
+            {Object.keys(results).map((section) =>
+              results[section].length > 0 ? (
+                <div key={section} className="search-section">
+                  <h3>{section.toUpperCase()}</h3>
+                  <ul>
+                    {results[section].map((item) => (
+                      <li
+                        key={item._id || item.id}
+                        className="search-item"
+                        onClick={() => {
+                          setSearchOpen(false);
+                          if (section === "categories") navigate(`/category/${item._id}`);
+                          if (section === "topics") navigate(`/topic/${item._id}`);
+                          if (section === "content") navigate(`/content/${item._id}`);
+
+                        }}
+                      >
+                        {item.title || item.name}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null
+            )}
+
+            {!loading &&
+              query &&
+              Object.values(results).every((arr) => arr.length === 0) && (
+                <p>No results found</p>
+              )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
