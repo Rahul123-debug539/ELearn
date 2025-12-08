@@ -115,10 +115,36 @@ function CategoryPage() {
   const contentArea = (
     <div className="content-wrapper">
       {content.length === 0 && (
-        <p className="empty-text">
-          👈 Start by selecting a topic from the left sidebar.
-        </p>
+        <div className="welcome-state">
+
+          <div className="welcome-badge"> Welcome to LearnEase</div>
+
+          <h1 className="welcome-title">
+            Start Your Learning Journey
+          </h1>
+
+          <p className="welcome-text">
+            Select a <span>Topic</span> from the left sidebar and begin exploring
+            high-quality lessons, examples, notes and practice content — all in one place.
+          </p>
+
+          <div className="welcome-steps">
+            <div className="step"> Choose a Topic</div>
+            <div className="step"> Read the Lesson</div>
+            <div className="step"> Practice with Examples</div>
+            <div className="step">Level Up Your Skills</div>
+          </div>
+
+          <button
+            className="welcome-btn"
+            onClick={() => document.querySelector(".vc-sidebar")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            Select Your First Topic
+          </button>
+
+        </div>
       )}
+
 
       {content.length > 0 &&
         content.map((item, idx) => (
