@@ -34,6 +34,10 @@ app.use("/api/subtopics", subtopicRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/search", searchRoutes);
 
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 //  404 API HANDLER (When route not found)
 app.use((req, res) => {
   res.status(404).json({

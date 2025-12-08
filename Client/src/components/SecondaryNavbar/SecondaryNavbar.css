@@ -1,7 +1,6 @@
 .subnav {
   width: 100%;
-  background: #f8faff;
-  border-bottom: 1px solid #1e293b;
+  background: linear-gradient(90deg, #1f2937, #4b5563, #e5e7eb);
   overflow-x: auto;
   display: flex;
   align-items: center;
@@ -21,7 +20,7 @@
 
 .subnav-list li {
   cursor: pointer;
-  color: #02070e;
+  color: #bc4af7;
   font-size: 0.9rem;
   padding: 4px 10px;
   border-radius: 999px;
