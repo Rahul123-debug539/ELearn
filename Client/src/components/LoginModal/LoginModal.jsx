@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./LoginModal.css";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function LoginModal({ visible, onClose }) {
   const { login } = useAuth();
@@ -12,8 +13,36 @@ function LoginModal({ visible, onClose }) {
 
   if (!visible) return null;
 
+  const validateForm = () => {
+    if (!email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Enter a valid email");
+      return false;
+    }
+
+    if (!password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     const res = await login(email, password);
     if (res.success) {
       onClose();
