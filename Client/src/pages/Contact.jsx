@@ -14,7 +14,6 @@ function Contact() {
       <div
         style={{
           background: "#0f172a",
-          padding: "2rem",
           borderRadius: "1rem",
           border: "1px solid #1f2937",
           width: "100%",
