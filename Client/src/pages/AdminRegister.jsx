@@ -14,15 +14,57 @@ function AdminRegister() {
     password: "",
   });
 
+  const validateForm = () => {
+    if (!form.key.trim()) {
+      toast.error("Admin Secret Key is required");
+      return false;
+    }
+
+    if (form.key.length < 6) {
+      toast.error("Secret Key must be at least 6 characters");
+      return false;
+    }
+
+    if (!form.name.trim()) {
+      toast.error("Full Name is required");
+      return false;
+    }
+
+    if (!form.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Enter a valid email address");
+      return false;
+    }
+
+    if (!form.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+
+    if (form.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     try {
       const res = await api.post("/api/auth/admin-register", form);
 
       if (res.data.status) {
         toast.success("Admin account created successfully!");
-        navigate("/admin/AdminDashboard");
+        navigate("/admin");
       } else {
         toast.error(res.data.message);
       }

@@ -14,8 +14,45 @@ function Register() {
     password: "",
   });
 
+  const validateForm = () => {
+    if (!form.name.trim()) {
+      toast.error("Full Name is required");
+      return false;
+    }
+
+    if (form.name.length < 3) {
+      toast.error("Name must be at least 3 characters");
+      return false;
+    }
+
+    if (!form.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Enter a valid email address");
+      return false;
+    }
+
+    if (!form.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+
+    if (form.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     try {
       // REGISTER USER

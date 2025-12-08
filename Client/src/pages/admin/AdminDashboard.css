@@ -3,6 +3,7 @@
 ------------------------------ */
 .admin-wrapper {
   display: flex;
+  margin-top: 40px;
   min-height: 100vh;
   background: linear-gradient(135deg, #0a0f1f, #111827);
   color: #fff;
