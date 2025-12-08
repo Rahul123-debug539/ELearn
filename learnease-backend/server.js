@@ -33,7 +33,8 @@ app.use("/api/topics", topicRoutes);
 app.use("/api/subtopics", subtopicRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/search", searchRoutes);
-// ✅ 404 API HANDLER (When route not found)
+
+//  404 API HANDLER (When route not found)
 app.use((req, res) => {
   res.status(404).json({
     status: false,
@@ -44,11 +45,11 @@ app.use((req, res) => {
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("✅ LearnEase Backend API is running...");
+  res.send(" LearnEase Backend API is running...");
 });
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
