@@ -34,6 +34,15 @@ function App() {
   const { user } = useAuth();
   const location = useLocation();
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch("https://elearn-70zx.onrender.com/ping");
+    }, 5 * 60 * 1000); // har 5 min
+
+    return () => clearInterval(interval);
+  }, []);
+
+
   // Auto popup after 10 sec
   useEffect(() => {
     if (!user) {
@@ -49,6 +58,8 @@ function App() {
     setShowLogin(false);
     sessionStorage.setItem("le_login_dismissed", "1");
   };
+
+  
 
   return (
     <>
