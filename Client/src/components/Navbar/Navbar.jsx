@@ -163,8 +163,10 @@ function Navbar({ onLoginClick }) {
             ☰
           </button>
 
-          <div className="nav-logo">LE</div>
-          <span className="nav-brand">LearnEase</span>
+          <div className="nav-logo">
+            <img src="/favicon1.png" alt="logo" />
+          </div>
+          <span className="nav-brand">ELearning</span>
         </div>
 
         <div className="nav-links">
