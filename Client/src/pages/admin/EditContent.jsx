@@ -8,7 +8,6 @@ import "./EditContent.css";
 
 import Quill from "quill";
 import ImageResize from "quill-image-resize-module-react";
-
 Quill.register("modules/imageResize", ImageResize);
 
 function EditContent() {
@@ -27,7 +26,7 @@ function EditContent() {
   const [newImages, setNewImages] = useState([]);
   const [newAdImage, setNewAdImage] = useState(null);
 
-  // ✅ LOAD EXISTING CONTENT
+  // ✅ LOAD EXISTING CONTENT (FIXED BLANK ISSUE)
   useEffect(() => {
     loadContent();
   }, []);
@@ -35,22 +34,27 @@ function EditContent() {
   const loadContent = async () => {
     try {
       const res = await api.get(`/api/content/single/${contentId}`);
-      if (res.data.status) {
+
+      if (res.data.status && res.data.content) {
         const c = res.data.content;
+
         setForm({
-          title: c.title,
-          fullContent: c.fullContent,
-          videoUrl: c.videoUrl,
-          images: c.images || [],
+          title: c.title || "",
+          fullContent: c.fullContent || "",
+          videoUrl: c.videoUrl || "",
+          images: Array.isArray(c.images) ? c.images : [],
           adImage: c.adImage || ""
         });
+      } else {
+        toast.error("Content not found");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Failed to load content");
     }
   };
 
-  // ✅ IMAGE REPLACE / INSERT HANDLER
+  // ✅ IMAGE INSERT / REPLACE INSIDE EDITOR
   const imageHandler = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -68,15 +72,16 @@ function EditContent() {
         const res = await api.post("/api/upload/editor-image", data);
         const imageUrl = res.data.url;
 
-        const quill = quillRef.current?.getEditor();
+        const quill = quillRef.current.getEditor();
         const range = quill.getSelection(true);
+
         const [leaf] = quill.getLeaf(range.index);
 
-        // ✅ IF CURSOR ON IMAGE → REPLACE
+        // ✅ Replace if cursor on image
         if (leaf?.domNode?.tagName === "IMG") {
           leaf.domNode.src = imageUrl;
         }
-        // ✅ ELSE INSERT NEW IMAGE
+        // ✅ Else insert new
         else {
           quill.insertEmbed(range.index, "image", imageUrl);
         }
@@ -89,19 +94,18 @@ function EditContent() {
     };
   };
 
-  // ✅ SAFE QUILL MODULES
+  // ✅ TOOLBAR WITH ALIGN + ALL OPTIONS
   const modules = useMemo(() => ({
     toolbar: {
       container: [
-        [{ header: [1, 2, 3,4,5,6, false] }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
         ["bold", "italic", "underline"],
         [{ color: [] }],
+        [{ align: [] }],
         ["blockquote", "code-block"],
         [{ list: "ordered" }, { list: "bullet" }],
         ["link", "image"],
-        ["clean"],
-        [{ align: [] }],
-
+        ["clean"]
       ],
       handlers: {
         image: imageHandler
@@ -112,26 +116,28 @@ function EditContent() {
     }
   }), []);
 
-  // ✅ SAVE CHANGES
+  // ✅ SAVE CHANGES (VIDEO SAFE)
   const handleSave = async () => {
     try {
       const fd = new FormData();
       fd.append("title", form.title);
       fd.append("fullContent", form.fullContent);
-      fd.append("videoUrl", form.videoUrl);
+
+      if (form.videoUrl) {
+        fd.append("videoUrl", form.videoUrl);
+      }
 
       newImages.forEach((img) => fd.append("images", img));
       if (newAdImage) fd.append("adImage", newAdImage);
 
-      const res = await api.put(`/api/content/update/${contentId}`, fd, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      const res = await api.put(`/api/content/update/${contentId}`, fd);
 
       if (res.data.status) {
         toast.success("Content Updated!");
         navigate("/admin");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Update failed");
     }
   };
@@ -140,14 +146,13 @@ function EditContent() {
     <div className="admin-page">
       <h2>Edit Content</h2>
 
-      {/* TITLE */}
       <input
         type="text"
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
+        placeholder="Title"
       />
 
-      {/* FULL CONTENT (✅ IMAGE EDIT ENABLED) */}
       <ReactQuill
         ref={quillRef}
         value={form.fullContent}
@@ -157,31 +162,24 @@ function EditContent() {
         style={{ height: "260px", marginBottom: "80px" }}
       />
 
-      {/* EXISTING IMAGES */}
       <h4>Existing Images</h4>
       <div className="preview-box">
-        {form.images?.map((img, i) => (
-          <img key={i} src={img} className="preview-old" alt="old-img" />
+        {form.images.map((img, i) => (
+          <img key={i} src={img} className="preview-old" alt="old" />
         ))}
       </div>
 
-      {/* ADD NEW IMAGES */}
       <label>Add New Images:</label>
-      <input
-        type="file"
-        multiple
-        onChange={(e) => setNewImages([...e.target.files])}
-      />
+      <input type="file" multiple onChange={(e) => setNewImages([...e.target.files])} />
 
       {newImages.length > 0 && (
         <div className="preview-box">
-          {newImages.map((img, idx) => (
-            <img key={idx} src={URL.createObjectURL(img)} className="preview-new" />
+          {newImages.map((img, i) => (
+            <img key={i} src={URL.createObjectURL(img)} className="preview-new" />
           ))}
         </div>
       )}
 
-      {/* VIDEO URL */}
       <input
         type="text"
         placeholder="YouTube Video URL"
@@ -189,16 +187,13 @@ function EditContent() {
         onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
       />
 
-      {/* AD IMAGE */}
       <h4>Existing Ad Image</h4>
       {form.adImage && <img src={form.adImage} className="preview-old" />}
 
       <label>Upload New Ad Image:</label>
       <input type="file" onChange={(e) => setNewAdImage(e.target.files[0])} />
 
-      {newAdImage && (
-        <img src={URL.createObjectURL(newAdImage)} className="preview-new" />
-      )}
+      {newAdImage && <img src={URL.createObjectURL(newAdImage)} className="preview-new" />}
 
       <button className="admin-btn" onClick={handleSave}>
         Save Changes
