@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { toast } from "react-toastify";
@@ -6,9 +6,15 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./EditContent.css";
 
+import Quill from "quill";
+import ImageResize from "quill-image-resize-module-react";
+
+Quill.register("modules/imageResize", ImageResize);
+
 function EditContent() {
   const { contentId } = useParams();
   const navigate = useNavigate();
+  const quillRef = useRef(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -21,7 +27,7 @@ function EditContent() {
   const [newImages, setNewImages] = useState([]);
   const [newAdImage, setNewAdImage] = useState(null);
 
-  // LOAD EXISTING CONTENT
+  // ✅ LOAD EXISTING CONTENT
   useEffect(() => {
     loadContent();
   }, []);
@@ -44,21 +50,80 @@ function EditContent() {
     }
   };
 
-  // SAVE CHANGES
-  // SAVE CHANGES
+  // ✅ IMAGE REPLACE / INSERT HANDLER
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const data = new FormData();
+      data.append("image", file);
+
+      try {
+        const res = await api.post("/api/upload/editor-image", data);
+        const imageUrl = res.data.url;
+
+        const quill = quillRef.current?.getEditor();
+        const range = quill.getSelection(true);
+        const [leaf] = quill.getLeaf(range.index);
+
+        // ✅ IF CURSOR ON IMAGE → REPLACE
+        if (leaf?.domNode?.tagName === "IMG") {
+          leaf.domNode.src = imageUrl;
+        }
+        // ✅ ELSE INSERT NEW IMAGE
+        else {
+          quill.insertEmbed(range.index, "image", imageUrl);
+        }
+
+        quill.setSelection(range.index + 1);
+      } catch (err) {
+        console.error(err);
+        toast.error("Image upload failed");
+      }
+    };
+  };
+
+  // ✅ SAFE QUILL MODULES
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3,4,5,6, false] }],
+        ["bold", "italic", "underline"],
+        [{ color: [] }],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+        [{ align: [] }],
+
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    },
+    imageResize: {
+      modules: ["Resize", "DisplaySize", "Toolbar"]
+    }
+  }), []);
+
+  // ✅ SAVE CHANGES
   const handleSave = async () => {
     try {
       const fd = new FormData();
-
       fd.append("title", form.title);
       fd.append("fullContent", form.fullContent);
       fd.append("videoUrl", form.videoUrl);
 
       newImages.forEach((img) => fd.append("images", img));
-
       if (newAdImage) fd.append("adImage", newAdImage);
 
-      const res = await api.put(`/api/content/update/${contentId}`, fd, {   // ✔ FIXED
+      const res = await api.put(`/api/content/update/${contentId}`, fd, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
@@ -71,7 +136,6 @@ function EditContent() {
     }
   };
 
-
   return (
     <div className="admin-page">
       <h2>Edit Content</h2>
@@ -83,11 +147,13 @@ function EditContent() {
         onChange={(e) => setForm({ ...form, title: e.target.value })}
       />
 
-      {/* FULL CONTENT */}
+      {/* FULL CONTENT (✅ IMAGE EDIT ENABLED) */}
       <ReactQuill
+        ref={quillRef}
         value={form.fullContent}
         onChange={(v) => setForm({ ...form, fullContent: v })}
         theme="snow"
+        modules={modules}
         style={{ height: "260px", marginBottom: "80px" }}
       />
 
@@ -107,16 +173,10 @@ function EditContent() {
         onChange={(e) => setNewImages([...e.target.files])}
       />
 
-      {/* NEW IMAGE PREVIEW */}
       {newImages.length > 0 && (
         <div className="preview-box">
           {newImages.map((img, idx) => (
-            <img
-              key={idx}
-              src={URL.createObjectURL(img)}
-              className="preview-new"
-              alt="new-img"
-            />
+            <img key={idx} src={URL.createObjectURL(img)} className="preview-new" />
           ))}
         </div>
       )}
@@ -137,11 +197,7 @@ function EditContent() {
       <input type="file" onChange={(e) => setNewAdImage(e.target.files[0])} />
 
       {newAdImage && (
-        <img
-          src={URL.createObjectURL(newAdImage)}
-          className="preview-new"
-          alt="new-ad"
-        />
+        <img src={URL.createObjectURL(newAdImage)} className="preview-new" />
       )}
 
       <button className="admin-btn" onClick={handleSave}>

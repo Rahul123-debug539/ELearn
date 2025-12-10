@@ -116,7 +116,7 @@ exports.getContent = async (req, res) => {
 };
 
 /* --------------------------------------------------
-   UPDATE CONTENT (ADMIN)
+  UPDATE CONTENT (ADMIN) — FINAL FIXED VERSION
 -------------------------------------------------- */
 exports.updateContent = async (req, res) => {
   try {
@@ -129,17 +129,25 @@ exports.updateContent = async (req, res) => {
       });
     }
 
-    let updates = req.body || {};
+    const updates = {
+      title: req.body.title,
+      fullContent: req.body.fullContent,
+      videoUrl: req.body.videoUrl
+    };
+
     const files = req.files || {};
 
+    // ✅ MULTIPLE IMAGE REPLACE
     if (files.images?.length > 0) {
       updates.images = files.images.map(f => f.path);
     }
 
+    // ✅ AD IMAGE REPLACE
     if (files.adImage?.[0]) {
       updates.adImage = files.adImage[0].path;
     }
 
+    // ✅ YOUTUBE LINK SAFETY
     if (updates.videoUrl) {
       updates.videoUrl = toYouTubeEmbed(updates.videoUrl);
     }
@@ -150,7 +158,7 @@ exports.updateContent = async (req, res) => {
 
     res.json({
       status: true,
-      message: "Content updated",
+      message: "Content updated successfully ✅",
       content: updated
     });
 
@@ -159,6 +167,7 @@ exports.updateContent = async (req, res) => {
     res.status(500).json({ status: false, message: "Server error" });
   }
 };
+
 
 /* --------------------------------------------------
    DELETE CONTENT (ADMIN)
