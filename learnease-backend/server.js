@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const path = require("path");
 const connectDB = require("./config/db");
 const searchRoutes = require("./routes/searchRoutes");
+const editorUploadRoutes = require("./routes/editorUploadRoutes");
 
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api/topics", topicRoutes);
 app.use("/api/subtopics", subtopicRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/upload", editorUploadRoutes);
 
 app.get("/ping", (req, res) => {
   res.send("pong");
