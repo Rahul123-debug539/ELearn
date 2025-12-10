@@ -1,12 +1,73 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import api from "../../api/api";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "./ManageContent.css"
+import "./ManageContent.css";
 import { useNavigate } from "react-router-dom";
+import ImageResize from "quill-image-resize-module-react";
+import Quill from "quill";
+
+Quill.register("modules/imageResize", ImageResize);
 
 function ManageContent() {
+  const quillRef = useRef(null);
+  const navigate = useNavigate();
+
+  // ✅ IMAGE HANDLER (MUST BE BEFORE useMemo)
+  const imageHandler = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const data = new FormData();
+      data.append("image", file);
+
+      try {
+        const res = await api.post("/api/upload/editor-image", data);
+        const imageUrl = res.data.url;
+
+        const quill = quillRef.current?.getEditor();
+        if (!quill) return;
+
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, "image", imageUrl);
+        quill.setSelection(range.index + 1);
+      } catch (err) {
+        console.error("Image upload failed", err);
+        toast.error("Image upload failed");
+      }
+    };
+  };
+
+  // ✅ STABLE MODULES (useMemo FIX)
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline"],
+        [{ color: [] }],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"]
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    },
+    imageResize: {
+      parchment: Quill.import("parchment"),
+      modules: ["Resize", "DisplaySize", "Toolbar"]
+    }
+  }), []);
+
+  // ✅ STATES
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
@@ -22,16 +83,14 @@ function ManageContent() {
   const [adImage, setAdImage] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
 
-  const navigate = useNavigate();
-
-  // Load categories
+  // ✅ LOAD CATEGORIES
   useEffect(() => {
     api.get("/api/categories").then((res) => {
       if (res.data.status) setCategories(res.data.categories);
     });
   }, []);
 
-  // Load topics
+  // ✅ LOAD TOPICS
   useEffect(() => {
     if (!selectedCat) return;
     api.get(`/api/topics/${selectedCat}`).then((res) => {
@@ -39,7 +98,7 @@ function ManageContent() {
     });
   }, [selectedCat]);
 
-  // Load subtopics
+  // ✅ LOAD SUBTOPICS
   useEffect(() => {
     if (!selectedTopic) return;
     api.get(`/api/subtopics/${selectedTopic}`).then((res) => {
@@ -47,6 +106,7 @@ function ManageContent() {
     });
   }, [selectedTopic]);
 
+  // ✅ SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -60,13 +120,8 @@ function ManageContent() {
       fd.append("title", title);
       fd.append("fullContent", fullContent);
 
-      // Append images
       images.forEach((img) => fd.append("images", img));
-
-      // Append ad image
       if (adImage) fd.append("adImage", adImage);
-
-      // Add safe YouTube link (not iframe)
       if (videoUrl) fd.append("videoUrl", videoUrl);
 
       const res = await api.post("/api/content/add", fd, {
@@ -94,7 +149,6 @@ function ManageContent() {
     <div className="admin-page">
       <h2>Add New Content</h2>
 
-      {/* CATEGORY */}
       <select
         className="admin-select"
         value={selectedCat}
@@ -108,7 +162,6 @@ function ManageContent() {
         ))}
       </select>
 
-      {/* TOPIC */}
       {selectedCat && (
         <select
           className="admin-select"
@@ -124,7 +177,6 @@ function ManageContent() {
         </select>
       )}
 
-      {/* SUBTOPIC */}
       {selectedTopic && (
         <select
           className="admin-select"
@@ -140,7 +192,6 @@ function ManageContent() {
         </select>
       )}
 
-      {/* FORM */}
       {selectedSub && (
         <form className="admin-form" onSubmit={handleSubmit}>
           <input
@@ -151,26 +202,15 @@ function ManageContent() {
             required
           />
 
-          {/* FULL CONTENT EDITOR */}
           <ReactQuill
+            ref={quillRef}
             value={fullContent}
             onChange={setFullContent}
             theme="snow"
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline"],
-                [{ color: [] }],
-                ["blockquote", "code-block", ],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image"],
-                ["clean"]
-              ]
-            }}
+            modules={modules}
             style={{ height: "300px", marginBottom: "80px" }}
           />
 
-          {/* IMAGE UPLOAD */}
           <label>Upload Images:</label>
           <input
             type="file"
@@ -179,7 +219,6 @@ function ManageContent() {
             accept="image/*"
           />
 
-          {/* IMAGE PREVIEW */}
           {images.length > 0 && (
             <div className="preview-box">
               {images.map((img, idx) => (
@@ -187,6 +226,7 @@ function ManageContent() {
                   <img src={URL.createObjectURL(img)} alt="preview" />
                   <button
                     className="remove-btn"
+                    type="button"
                     onClick={() => {
                       const arr = [...images];
                       arr.splice(idx, 1);
@@ -200,7 +240,6 @@ function ManageContent() {
             </div>
           )}
 
-          {/* VIDEO URL INPUT */}
           <input
             type="text"
             placeholder="YouTube Video Link (not iframe)"
@@ -208,7 +247,6 @@ function ManageContent() {
             onChange={(e) => setVideoUrl(e.target.value)}
           />
 
-          {/* VIDEO PREVIEW */}
           {videoUrl && (
             <div className="preview-item">
               <iframe
@@ -217,6 +255,7 @@ function ManageContent() {
                 src={videoUrl.replace("youtu.be/", "youtube.com/embed/")}
               ></iframe>
               <button
+                type="button"
                 className="remove-btn"
                 onClick={() => setVideoUrl("")}
               >
@@ -225,7 +264,6 @@ function ManageContent() {
             </div>
           )}
 
-          {/* AD IMAGE UPLOAD */}
           <label>Upload Ad Image:</label>
           <input
             type="file"
@@ -233,11 +271,14 @@ function ManageContent() {
             onChange={(e) => setAdImage(e.target.files[0])}
           />
 
-          {/* AD IMAGE PREVIEW */}
           {adImage && (
             <div className="preview-item">
               <img src={URL.createObjectURL(adImage)} alt="Ad" />
-              <button className="remove-btn" onClick={() => setAdImage(null)}>
+              <button
+                type="button"
+                className="remove-btn"
+                onClick={() => setAdImage(null)}
+              >
                 ✖
               </button>
             </div>
