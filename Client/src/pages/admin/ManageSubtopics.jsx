@@ -10,7 +10,9 @@ function ManageSubtopics() {
   const [selectedCat, setSelectedCat] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [name, setName] = useState("");
-  const [editId, setEditId] = useState(null);   // ✅ 1️⃣ EDIT STATE
+  const [editId, setEditId] = useState(null);
+
+  // EDIT STATE
 
   const navigate = useNavigate();
 
@@ -37,14 +39,14 @@ function ManageSubtopics() {
   useEffect(loadTopics, [selectedCat]);
   useEffect(loadSubtopics, [selectedTopic]);
 
-  // ✅ 2️⃣ ADD / UPDATE SUBTOPIC
+  //  ADD / UPDATE SUBTOPIC
   const addSubtopic = async (e) => {
     e.preventDefault();
     try {
       let res;
 
       if (editId) {
-        // ✅ UPDATE
+        // UPDATE
         res = await api.put(`/api/subtopics/${editId}`, { name });
 
         if (res.data.status) {
@@ -52,7 +54,7 @@ function ManageSubtopics() {
           setEditId(null);
         }
       } else {
-        // ✅ ADD
+        // ADD
         res = await api.post("/api/subtopics/add", {
           topicId: selectedTopic,
           name,
@@ -65,19 +67,19 @@ function ManageSubtopics() {
 
       setName("");
       loadSubtopics();
-      // navigate("/admin");  ❌ optional (tum chaho to hata ke yahin live update dikhao)
+      // navigate("/admin");
     } catch (err) {
       toast.error(err.response?.data?.message || "Error saving subtopic");
     }
   };
 
-  // ✅ 3️⃣ EDIT HANDLER
+  //  EDIT HANDLER
   const editSubtopic = (subtopic) => {
     setName(subtopic.name);
     setEditId(subtopic._id);
   };
 
-  // ✅ DELETE
+  // DELETE
   const deleteSubtopic = async (id) => {
     if (!confirm("Delete this subtopic?")) return;
     const res = await api.delete(`/api/subtopics/${id}`);
@@ -131,7 +133,7 @@ function ManageSubtopics() {
             />
 
             <button type="submit">
-              {editId ? "Update Subtopic" : "Add Subtopic"} {/* ✅ */}
+              {editId ? "Update Subtopic" : "Add Subtopic"}
             </button>
           </form>
 
@@ -149,7 +151,7 @@ function ManageSubtopics() {
                   <td>{s.name}</td>
                   <td>{s.slug}</td>
                   <td>
-                    {/* ✅ 4️⃣ EDIT BUTTON */}
+                    {/*  EDIT BUTTON */}
                     <button
                       type="button"
                       className="edit-btn"
@@ -158,7 +160,7 @@ function ManageSubtopics() {
                       Edit
                     </button>
 
-                    {/* ✅ DELETE BUTTON */}
+                    {/* DELETE BUTTON */}
                     <button
                       type="button"
                       className="delete-btn"

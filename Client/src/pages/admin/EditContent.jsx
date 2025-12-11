@@ -26,7 +26,7 @@ function EditContent() {
   const [newImages, setNewImages] = useState([]);
   const [newAdImage, setNewAdImage] = useState(null);
 
-  // ✅ LOAD EXISTING CONTENT (FIXED BLANK ISSUE)
+  // LOAD EXISTING CONTENT (FIXED BLANK ISSUE)
   useEffect(() => {
     loadContent();
   }, []);
@@ -54,7 +54,7 @@ function EditContent() {
     }
   };
 
-  // ✅ IMAGE INSERT / REPLACE INSIDE EDITOR
+  // IMAGE INSERT / REPLACE INSIDE EDITOR
   const imageHandler = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -77,11 +77,11 @@ function EditContent() {
 
         const [leaf] = quill.getLeaf(range.index);
 
-        // ✅ Replace if cursor on image
+        // Replace if cursor on image
         if (leaf?.domNode?.tagName === "IMG") {
           leaf.domNode.src = imageUrl;
         }
-        // ✅ Else insert new
+        // Else insert new
         else {
           quill.insertEmbed(range.index, "image", imageUrl);
         }
@@ -94,7 +94,7 @@ function EditContent() {
     };
   };
 
-  // ✅ TOOLBAR WITH ALIGN + ALL OPTIONS
+  // TOOLBAR WITH ALIGN + ALL OPTIONS
   const modules = useMemo(() => ({
     toolbar: {
       container: [
@@ -116,7 +116,7 @@ function EditContent() {
     }
   }), []);
 
-  // ✅ SAVE CHANGES (VIDEO SAFE)
+  // SAVE CHANGES (VIDEO SAFE)
   const handleSave = async () => {
     try {
       const fd = new FormData();

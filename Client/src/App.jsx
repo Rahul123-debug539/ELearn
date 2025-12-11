@@ -34,6 +34,19 @@ function App() {
   const { user } = useAuth();
   const location = useLocation();
 
+  function ScrollToTop() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }, [pathname]);
+
+    return null;
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       fetch("https://elearn-70zx.onrender.com/ping");
@@ -63,6 +76,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop/>
       <Navbar onLoginClick={() => setShowLogin(true)} />
       <SecondaryNavbar />
 
