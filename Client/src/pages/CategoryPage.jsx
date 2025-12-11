@@ -6,12 +6,25 @@ import "./CategoryLayout.css"; // OUR NEW GFG-LIKE STYLING
 
 function CategoryPage() {
   const { categoryId } = useParams();
-
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [topics, setTopics] = useState([]);
   const [expandedTopic, setExpandedTopic] = useState(null);
   const [subtopics, setSubtopics] = useState({});
   const [selectedSubtopic, setSelectedSubtopic] = useState(null);
   const [content, setContent] = useState([]);
+
+  /*--------------------------------
+      Scroll Top
+  ----------------------------------*/
+
+  const scrollTopAfterRender = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  };
+
 
   /* -------------------------------
       LOAD TOPICS
@@ -64,6 +77,10 @@ function CategoryPage() {
   const loadContent = async (sub) => {
     setSelectedSubtopic(sub._id);
 
+    const list = subtopics[expandedTopic] || [];
+    const index = list.findIndex((s) => s._id === sub._id);
+    setCurrentIndex(index);
+
     try {
       const res = await api.get(`/api/content/${sub._id}`);
       if (res.data.status) setContent(res.data.content || []);
@@ -73,6 +90,25 @@ function CategoryPage() {
       setContent([]);
     }
   };
+
+  const goNext = () => {
+    const list = subtopics[expandedTopic] || [];
+    if (currentIndex < list.length - 1) {
+      const nextSub = list[currentIndex + 1];
+      loadContent(nextSub);
+      scrollTopAfterRender()
+    }
+  };
+
+  const goPrev = () => {
+    const list = subtopics[expandedTopic] || [];
+    if (currentIndex > 0) {
+      const prevSub = list[currentIndex - 1];
+      loadContent(prevSub);
+      scrollTopAfterRender();
+    }
+  };
+
 
   /* -------------------------------
       SIDEBAR UI
@@ -188,6 +224,23 @@ function CategoryPage() {
             )}
 
             <hr className="content-divider" />
+
+            <div className="nav-buttons">
+              <button
+                onClick={goPrev}
+                disabled={currentIndex === 0}
+              >
+                ⬅ Previous
+              </button>
+
+              <button
+                onClick={goNext}
+                disabled={currentIndex === (subtopics[expandedTopic]?.length - 1)}
+              >
+                Next ➡
+              </button>
+            </div>
+
           </div>
         ))}
     </div>

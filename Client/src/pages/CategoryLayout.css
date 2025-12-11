@@ -355,6 +355,33 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+}
+
+.nav-buttons button {
+  padding: 10px 20px;
+  background: #6610f2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.nav-buttons button:hover:not(:disabled) {
+  background: #520dc2;
+}
+
+.nav-buttons button:disabled {
+  background: #bdbdbd;
+  cursor: not-allowed;
+}
+
 /* ================================
    RESPONSIVE
 ================================ */

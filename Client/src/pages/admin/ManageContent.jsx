@@ -14,7 +14,7 @@ function ManageContent() {
   const quillRef = useRef(null);
   const navigate = useNavigate();
 
-  // ✅ IMAGE HANDLER (MUST BE BEFORE useMemo)
+  // IMAGE HANDLER
   const imageHandler = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -45,7 +45,7 @@ function ManageContent() {
     };
   };
 
-  // ✅ STABLE MODULES (useMemo FIX)
+  // STABLE MODULES
   const modules = useMemo(() => ({
     toolbar: {
       container: [
@@ -67,7 +67,7 @@ function ManageContent() {
     }
   }), []);
 
-  // ✅ STATES
+  //  STATES
   const [categories, setCategories] = useState([]);
   const [topics, setTopics] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
@@ -83,14 +83,14 @@ function ManageContent() {
   const [adImage, setAdImage] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
 
-  // ✅ LOAD CATEGORIES
+  //  LOAD CATEGORIES
   useEffect(() => {
     api.get("/api/categories").then((res) => {
       if (res.data.status) setCategories(res.data.categories);
     });
   }, []);
 
-  // ✅ LOAD TOPICS
+  //  LOAD TOPICS
   useEffect(() => {
     if (!selectedCat) return;
     api.get(`/api/topics/${selectedCat}`).then((res) => {
@@ -98,7 +98,7 @@ function ManageContent() {
     });
   }, [selectedCat]);
 
-  // ✅ LOAD SUBTOPICS
+  // LOAD SUBTOPICS
   useEffect(() => {
     if (!selectedTopic) return;
     api.get(`/api/subtopics/${selectedTopic}`).then((res) => {
@@ -106,7 +106,7 @@ function ManageContent() {
     });
   }, [selectedTopic]);
 
-  // ✅ SUBMIT
+  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
