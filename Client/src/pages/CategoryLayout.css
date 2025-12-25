@@ -430,19 +430,30 @@
     display: block;
   }
 
-  .video-container {
-    margin: 8px 0 !important;
-    padding: 0 !important;
-  }
-
-  .video-container iframe {
-    display: flex;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 110px;
-    border-radius: 0;
-    margin-bottom: 40px;
-  }
+     .video-container {
+       margin: 8px 0 40px 0 !important;
+       padding: 0 !important;
+       position: static !important;
+       clear: both !important;
+     }
+  
+     .video-container iframe {
+       display: block !important;
+       width: 100% !important;
+       max-width: 100% !important;
+       height: 210px;
+  
+       margin: 0 !important;
+       border-radius: 0;
+     }
+  
+     .nav-buttons {
+       display: flex;
+       clear: both !important;
+       position: static !important;
+       margin: 12px 8px !important;
+       padding: 12px 0 !important;
+     }
 
   .html-content pre {
     width: 100% !important;
