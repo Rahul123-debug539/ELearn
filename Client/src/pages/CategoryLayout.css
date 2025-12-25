@@ -438,11 +438,10 @@
      }
   
      .video-container iframe {
-       display: block !important;
+       display: inline-block !important;
        width: 100% !important;
        max-width: 100% !important;
        height: 210px;
-  
        margin: 0 !important;
        border-radius: 0;
      }
