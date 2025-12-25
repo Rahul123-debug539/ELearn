@@ -1,6 +1,4 @@
-/* ================================
-   GLOBAL PAGE LAYOUT
-================================ */
+
 .category-wrapper {
   display: flex;
   min-height: 100vh;
@@ -8,9 +6,7 @@
   font-family: "Inter", sans-serif;
 }
 
-/* ================================
-   SIDEBAR (FINAL MODERN VERSION)
-================================ */
+
 .category-sidebar {
   width: 260px;
   background: #111827;
@@ -28,7 +24,7 @@
   color: #93c5fd;
 }
 
-/* Topic List */
+
 .topic-list {
   list-style: none;
   margin: 0;
@@ -54,7 +50,7 @@
   border-left: 3px solid #3b82f6;
 }
 
-/* Subtopics */
+
 .subtopic-list {
   padding-left: 8px;
   border-left: 1px solid #374151;
@@ -82,9 +78,7 @@
   color: #3b82f6;
 }
 
-/* ================================
-   MAIN CONTENT AREA
-================================ */
+
 .content-wrapper {
   flex: 1;
   padding: 35px;
@@ -109,9 +103,6 @@
 }
 
 
-/* =========================
-   WELCOME EMPTY STATE
-========================= */
 
 .welcome-state {
   margin-top: 1rem;
@@ -213,7 +204,7 @@
   }
 }
 
-/* ✅ Mobile fine tuning */
+
 @media (max-width: 480px) {
   .welcome-title {
     font-size: 1.7rem;
@@ -227,9 +218,7 @@
     padding: 2.5rem 1.5rem;
   }
 }
-/* ================================
-   HTML / QUILL CONTENT
-================================ */
+
 .html-content {
   line-height: 1.72;
   color: #1e293b;
@@ -261,40 +250,28 @@
   display: block;
 }
 
-/* ===========================
-   PROPER BULLET POINT STYLING
-=========================== */
 
-/* Unordered List */
+
 .html-content ul {
   margin: 12px 0 16px 20px;
-  /* Proper spacing */
   padding-left: 20px;
-  /* Indent */
   list-style-type: disc;
-  /* Clean dots */
 }
 
-/* List Items */
+
 .html-content li {
   margin-bottom: 8px;
-  /* Gap tussen bullets */
   line-height: 1.6;
   font-size: 1.05rem;
   color: #1e293b;
 }
 
-/* Bullet icon color (customize) */
 .html-content ul li::marker {
   color: #1d4ed8;
-  /* Blue bullet dot */
   font-size: 1.1rem;
-  /* Slightly bigger for clean look */
 }s
 
-/* ================================
-   UNIVERSAL IMAGE CONTROL
-================================ */
+
 .html-content img,
 .image-grid img,
 .ad-section img,
@@ -305,12 +282,12 @@
   display: block;
   margin: 20px auto;
   border-radius: 10px;
-  object-fit: contain;
+  object-fit: cover;
   border: 1px solid #e2e8f0;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* Image grid */
+
 .image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -318,9 +295,7 @@
   margin: 20px 0;
 }
 
-/* ================================
-   YOUTUBE RESPONSIVE VIDEO
-================================ */
+
 .video-container {
   position: relative;
   padding-bottom: 56.25%;
@@ -337,9 +312,6 @@
   border-radius: 12px;
 }
 
-/* ================================
-   AD SECTION
-================================ */
 .ad-section {
   background: #f1f5f9;
   padding: 18px;
@@ -348,7 +320,7 @@
   border: 1px solid #e2e8f0;
 }
 
-/* Divider */
+
 .content-divider {
   margin-top: 35px;
   border: 0;
@@ -382,32 +354,110 @@
   cursor: not-allowed;
 }
 
-/* ================================
-   RESPONSIVE
-================================ */
-@media (max-width: 700px) {
-  .category-wrapper {
-    flex-direction: column;
-  }
 
-  .category-sidebar {
+@media (max-width: 768px) {
+
+  .category-wrapper,
+  .cat-layout,
+  .category-layout,
+  main,
+  .cat-content,
+  .vc-content,
+  .category-content {
+    margin: 0 !important;
+    padding: 0 !important;
     width: 100%;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid #1f2937;
+    max-width: 100%;
   }
-}
 
-@media (max-width: 600px) {
+
   .content-wrapper {
-    padding: 15px;
-  }
-
-  .content-title {
-    font-size: 1.5rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    max-width: 100%;
   }
 
   .content-block {
-    padding: 18px;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .html-content {
+    margin:10px 10px !important;
+    padding: 6px 8px !important;
+  }
+
+  .html-content,
+  .html-content * {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    box-sizing: border-box;
+  }
+
+ .content-title {
+   display: block !important;
+   visibility: visible !important;
+   opacity: 1 !important;
+
+   color: #0f172a !important;
+   background: transparent !important;
+
+   margin: 14px 8px !important;
+   padding: 0 !important;
+
+   font-size: 1.35rem;
+   font-weight: 700;
+   line-height: 1.35;
+ }
+
+  .image-grid {
+    margin: 8px 0 !important;
+    padding: 0 !important;
+  }
+
+  .image-grid img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    display: block;
+  }
+
+  .video-container {
+    margin: 8px 0 !important;
+    padding: 0 !important;
+  }
+
+  .video-container iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 220px;
+    border-radius: 0;
+  }
+
+  .html-content pre {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    padding: 10px !important;
+    overflow-x: auto !important;
+    white-space: pre !important;
+    border-radius: 0 !important;
+  }
+
+  .html-content code {
+    white-space: pre !important;
+  }
+
+
+  .nav-buttons {
+    margin: 12px 8px !important;
   }
 }
