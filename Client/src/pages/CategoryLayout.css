@@ -439,7 +439,7 @@
     display: flex;
     width: 100% !important;
     max-width: 100% !important;
-    /* height: 220px; */
+    height: 110px;
     border-radius: 0;
     margin-bottom: 40px;
   }
