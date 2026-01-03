@@ -111,12 +111,12 @@ exports.forgotPassword = async (req, res, next) => {
     user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
     await user.save();
 
-    // await transporter.sendMail({
-    //   from: process.env.MAIL_USER,
-    //   to: email,
-    //   subject: "Password Reset OTP",
-    //   text: `Your OTP is ${otp}`,
-    // });
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: "Password Reset OTP",
+      text: `Your OTP is ${otp}`,
+    });
 
     res.json({ status: true, message: "OTP sent to email" });
   } catch (err) {
