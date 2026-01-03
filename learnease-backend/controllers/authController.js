@@ -4,9 +4,10 @@ const jwt = require("jsonwebtoken");
 const generateOTP = require("../utils/generateOTP");
 const transporter = require("../config/mail");
 
-
+// ==========================
 // REGISTER
-exports.register = async (req, res) => {
+// ==========================
+exports.register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -29,40 +30,44 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashed,
-      role: role || "user"
+      role: role || "user",
     });
 
     res.status(201).json({
       status: true,
-      message: "User registered successfully"
+      message: "User registered successfully",
     });
   } catch (err) {
-    console.error("Register error:", err.message);
-    res.status(500).json({ status: false, message: "Server error" });
+    next(err); // 🔥 IMPORTANT
   }
 };
 
+// ==========================
 // LOGIN
-exports.login = async (req, res) => {
+// ==========================
+exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password)
+    if (!email || !password) {
       return res
         .status(400)
         .json({ status: false, message: "All fields are required" });
+    }
 
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
       return res
         .status(400)
         .json({ status: false, message: "User not found" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res
         .status(400)
         .json({ status: false, message: "Incorrect password" });
+    }
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -75,15 +80,17 @@ exports.login = async (req, res) => {
       message: "Login successful",
       token,
       role: user.role,
-      name: user.name
+      name: user.name,
     });
   } catch (err) {
-    console.error("Login error:", err.message);
-    res.status(500).json({ status: false, message: "Server error" });
+    next(err); // 🔥 IMPORTANT
   }
 };
 
-exports.forgotPassword = async (req, res) => {
+// ==========================
+// FORGOT PASSWORD (SEND OTP)
+// ==========================
+exports.forgotPassword = async (req, res, next) => {
   try {
     let { email } = req.body;
 
@@ -101,7 +108,7 @@ exports.forgotPassword = async (req, res) => {
     const otp = generateOTP();
 
     user.resetOTP = otp;
-    user.otpExpiry = Date.now() + 10 * 60 * 1000;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
     await user.save();
 
     await transporter.sendMail({
@@ -114,14 +121,20 @@ exports.forgotPassword = async (req, res) => {
     res.json({ status: true, message: "OTP sent to email" });
   } catch (err) {
     console.error("Forgot password error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err); // 🔥 CRITICAL FIX
   }
 };
 
-
-exports.resetPassword = async (req, res) => {
+// ==========================
+// RESET PASSWORD
+// ==========================
+exports.resetPassword = async (req, res, next) => {
   try {
     let { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "All fields required" });
+    }
 
     email = email.trim().toLowerCase();
 
@@ -135,9 +148,11 @@ exports.resetPassword = async (req, res) => {
     user.otpExpiry = null;
     await user.save();
 
-    res.json({ status: true, message: "Password updated successfully" });
+    res.json({
+      status: true,
+      message: "Password updated successfully",
+    });
   } catch (err) {
-    console.error("Reset password error:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err); // 🔥 IMPORTANT
   }
 };

@@ -6,33 +6,44 @@ const connectDB = require("./config/db");
 const searchRoutes = require("./routes/searchRoutes");
 const editorUploadRoutes = require("./routes/editorUploadRoutes");
 
-
 dotenv.config();
 
 const app = express();
 
-// Connect MongoDB
+// =======================
+// DB CONNECT
+// =======================
 connectDB();
 
-// Middlewares
+// =======================
+// CORS CONFIG (FIRST)
+// =======================
 const corsOptions = {
   origin: [
-    "https://e-learn-mocha.vercel.app", // frontend
-    "http://localhost:5173"             // local dev
+    "https://e-learn-mocha.vercel.app",
+    "http://localhost:5173",
   ],
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); 
+app.options("*", cors(corsOptions));
+
+// =======================
+// BODY PARSER
+// =======================
 app.use(express.json());
 
-// Serve uploaded images
+// =======================
+// STATIC FILES
+// =======================
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
+// =======================
+// ROUTES
+// =======================
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const topicRoutes = require("./routes/topicRoutes");
@@ -47,25 +58,48 @@ app.use("/api/content", contentRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/upload", editorUploadRoutes);
 
+// =======================
+// HEALTH CHECK
+// =======================
 app.get("/ping", (req, res) => {
   res.send("pong");
 });
 
-//  404 API HANDLER (When route not found)
+app.get("/", (req, res) => {
+  res.send("LearnEase Backend API is running...");
+});
+
+// =======================
+// 404 HANDLER
+// =======================
 app.use((req, res) => {
   res.status(404).json({
     status: false,
-    message: "API Route Not Found"
+    message: "API Route Not Found",
   });
 });
 
+// =======================
+// GLOBAL ERROR HANDLER (LAST)
+// =======================
+app.use((err, req, res, next) => {
+  console.error("🔥 GLOBAL ERROR:", err);
 
-// Test route
-app.get("/", (req, res) => {
-  res.send(" LearnEase Backend API is running...");
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://e-learn-mocha.vercel.app"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  res.status(500).json({
+    status: false,
+    message: err.message || "Internal Server Error",
+  });
 });
 
-// Start server
+// =======================
+// START SERVER
+// =======================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
