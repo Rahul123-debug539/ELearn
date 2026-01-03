@@ -57,7 +57,6 @@ function LoginModal({ visible, onClose }) {
 
 
   const gotToResetPassword =()=>{
-    onclose();
     navigate("/forgot-password");
   }
 
