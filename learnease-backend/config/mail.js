@@ -5,10 +5,9 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS, // Gmail APP PASSWORD
+    user: "apikey",
+    pass: process.env.BREVO_SMTP_KEY,
   },
-  connectionTimeout: 10000,
 });
 
 module.exports = transporter;
