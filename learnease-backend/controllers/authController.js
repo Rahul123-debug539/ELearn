@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const generateOTP = require("../utils/generateOTP");
-const transporter = require("../config/mailer");
+const transporter = require("../config/mail");
 
 
 // REGISTER
