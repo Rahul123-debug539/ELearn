@@ -3,6 +3,7 @@ import "./LoginModal.css";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 function LoginModal({ visible, onClose }) {
   const { login } = useAuth();
