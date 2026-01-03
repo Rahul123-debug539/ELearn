@@ -93,6 +93,7 @@ function App() {
         <Route path="/admin/create" element={<AdminRegister />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/content/:contentId" element={<ViewContent />} />
+        <Route path="/login" element={<LoginModal/>}/>
 
 
 
