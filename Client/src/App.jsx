@@ -26,6 +26,7 @@ import AdminRegister from "./pages/AdminRegister";
 import Footer from "./components/Footer";
 import ViewContent from "./pages/ViewContent";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword";
 
 import { useAuth } from "./context/AuthContext";
 
