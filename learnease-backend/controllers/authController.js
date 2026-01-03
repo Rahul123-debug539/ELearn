@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const generateOTP = require("../utils/generateOTP");
+const transporter = require("../config/mailer");
 
 
 // REGISTER
@@ -82,40 +83,61 @@ exports.login = async (req, res) => {
   }
 };
 
-/* FORGOT PASSWORD */
 exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    let { email } = req.body;
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+    if (!email) {
+      return res.status(400).json({ message: "Email required" });
+    }
 
-  const otp = generateOTP();
+    email = email.trim().toLowerCase();
 
-  user.resetOTP = otp;
-  user.otpExpiry = Date.now() + 10 * 60 * 1000; // 10 min
-  await user.save();
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  await transporter.sendMail({
-    to: email,
-    subject: "Password Reset OTP",
-    text: `Your OTP is ${otp}`,
-  });
+    const otp = generateOTP();
 
-  res.json({ message: "OTP sent to email" });
+    user.resetOTP = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000;
+    await user.save();
+
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: "Password Reset OTP",
+      text: `Your OTP is ${otp}`,
+    });
+
+    res.json({ status: true, message: "OTP sent to email" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-/* RESET PASSWORD */
+
 exports.resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  try {
+    let { email, otp, newPassword } = req.body;
 
-  const user = await User.findOne({ email, resetOTP: otp });
-  if (!user || user.otpExpiry < Date.now())
-    return res.status(400).json({ message: "Invalid or expired OTP" });
+    email = email.trim().toLowerCase();
 
-  user.password = await bcrypt.hash(newPassword, 10);
-  user.resetOTP = null;
-  user.otpExpiry = null;
-  await user.save();
+    const user = await User.findOne({ email, resetOTP: otp });
+    if (!user || user.otpExpiry < Date.now()) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
 
-  res.json({ message: "Password updated successfully" });
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetOTP = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    res.json({ status: true, message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
