@@ -120,18 +120,14 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save();
 
     // 🔥 SEND REAL EMAIL USING RESEND (NO SMTP)
-    await resend.emails.send({
-      from: "LearnEase <onboarding@resend.dev>",
+    const response = await resend.emails.send({
+      from: "onboarding@resend.dev",
       to: email,
       subject: "Password Reset OTP",
-      html: `
-        <h2>Password Reset</h2>
-        <p>Your OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for <b>10 minutes</b>.</p>
-      `,
+      text: `Your OTP is ${otp}`,
     });
 
+    console.log("RESEND RESPONSE:", response);
     res.json({
       status: true,
       message: "OTP sent to your email",
