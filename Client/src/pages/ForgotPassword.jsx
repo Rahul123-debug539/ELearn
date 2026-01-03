@@ -10,10 +10,24 @@ const ForgotPassword = () => {
   const [msg, setMsg] = useState("");
 
   const sendOtp = async () => {
-    await api.post("/api/auth/forgot-password", { email });
-    setMsg("OTP sent to email");
-    setStep(2);
+    try {
+      setMsg(""); // clear old msg
+
+      const res = await api.post("/api/auth/forgot-password", { email });
+
+      if (res.data.status) {
+        setMsg("OTP sent to email");
+        setStep(2);
+      } else {
+        setMsg(res.data.message || "Failed to send OTP");
+      }
+    } catch (err) {
+      setMsg(
+        err.response?.data?.message || "Something went wrong"
+      );
+    }
   };
+
 
   const resetPassword = async () => {
     await api.post("api/auth/reset-password", {
