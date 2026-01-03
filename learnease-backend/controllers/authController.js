@@ -114,19 +114,26 @@ exports.forgotPassword = async (req, res, next) => {
     const otp = generateOTP();
 
     user.resetOTP = otp;
-    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    await transporter.sendMail({
-      from: process.env.MAIL_USER,
+    // ✅ 🔥 YAHIN ADD KARNA HAI (MAIL SEND)
+    await resend.emails.send({
+      from: "LearnEase <onboarding@resend.dev>",
       to: email,
       subject: "Password Reset OTP",
-      text: `Your OTP is ${otp}`,
+      html: `
+        <h2>Password Reset</h2>
+        <p>Your OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p>
+      `,
     });
 
+    // ✅ RESPONSE
     res.json({
       status: true,
-      message: "OTP sent to email",
+      message: "OTP sent to your email",
     });
   } catch (err) {
     console.error("Forgot password error:", err);

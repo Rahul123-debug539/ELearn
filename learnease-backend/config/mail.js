@@ -1,22 +1,9 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: "apikey",
-    pass: process.env.BREVO_SMTP_KEY,
-  },
-});
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("❌ RESEND_API_KEY is not defined in environment variables");
+}
 
-transporter.verify((err, success) => {
-  if (err) {
-    console.error("❌ BREVO SMTP ERROR:", err);
-  } else {
-    console.log("✅ BREVO SMTP READY");
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-
-module.exports = transporter;
+module.exports = resend;
