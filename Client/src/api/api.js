@@ -2,7 +2,7 @@ import axios from "axios";
 
 // ✅ Create API instance
 const api = axios.create({
-  baseURL: "https://elearn-70zx.onrender.com/"
+  baseURL: "https://elearn-70zx.onrender.com"
 });
 
 
