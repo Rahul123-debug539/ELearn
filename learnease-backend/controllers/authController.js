@@ -2,11 +2,11 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const generateOTP = require("../utils/generateOTP");
-const transporter = require("../config/mail");
+const resend = require("../config/mail");
 
-// ==========================
-// REGISTER
-// ==========================
+/* ======================================================
+   REGISTER
+====================================================== */
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
@@ -24,12 +24,12 @@ exports.register = async (req, res, next) => {
         .json({ status: false, message: "Email already registered" });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
       name,
       email,
-      password: hashed,
+      password: hashedPassword,
       role: role || "user",
     });
 
@@ -38,13 +38,14 @@ exports.register = async (req, res, next) => {
       message: "User registered successfully",
     });
   } catch (err) {
-    next(err); // 🔥 IMPORTANT
+    console.error("Register error:", err);
+    next(err);
   }
 };
 
-// ==========================
-// LOGIN
-// ==========================
+/* ======================================================
+   LOGIN
+====================================================== */
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -83,13 +84,14 @@ exports.login = async (req, res, next) => {
       name: user.name,
     });
   } catch (err) {
-    next(err); // 🔥 IMPORTANT
+    console.error("Login error:", err);
+    next(err);
   }
 };
 
-// =======================
-// FORGOT PASSWORD (SEND OTP)
-// =======================
+/* ======================================================
+   FORGOT PASSWORD – SEND OTP (REAL EMAIL)
+====================================================== */
 exports.forgotPassword = async (req, res, next) => {
   try {
     let { email } = req.body;
@@ -114,10 +116,10 @@ exports.forgotPassword = async (req, res, next) => {
     const otp = generateOTP();
 
     user.resetOTP = otp;
-    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    // ✅ 🔥 YAHIN ADD KARNA HAI (MAIL SEND)
+    // 🔥 SEND REAL EMAIL USING RESEND (NO SMTP)
     await resend.emails.send({
       from: "LearnEase <onboarding@resend.dev>",
       to: email,
@@ -126,11 +128,10 @@ exports.forgotPassword = async (req, res, next) => {
         <h2>Password Reset</h2>
         <p>Your OTP is:</p>
         <h1>${otp}</h1>
-        <p>This OTP is valid for 10 minutes.</p>
+        <p>This OTP is valid for <b>10 minutes</b>.</p>
       `,
     });
 
-    // ✅ RESPONSE
     res.json({
       status: true,
       message: "OTP sent to your email",
@@ -141,9 +142,9 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-// =======================
-// RESET PASSWORD
-// =======================
+/* ======================================================
+   RESET PASSWORD
+====================================================== */
 exports.resetPassword = async (req, res, next) => {
   try {
     let { email, otp, newPassword } = req.body;
@@ -177,7 +178,7 @@ exports.resetPassword = async (req, res, next) => {
 
     res.json({
       status: true,
-      message: "Password updated successfully",
+      message: "Password reset successfully",
     });
   } catch (err) {
     console.error("Reset password error:", err);
