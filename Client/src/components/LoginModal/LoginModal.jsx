@@ -55,6 +55,12 @@ function LoginModal({ visible, onClose }) {
     navigate("/register"); // go to register page
   };
 
+
+  const gotToResetPassword =()=>{
+    onclose();
+    navigate("/forgot-password");
+  }
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
@@ -96,7 +102,9 @@ function LoginModal({ visible, onClose }) {
           </span>
         </p>
         <p className="modal-switch">
-          <Link to="/forgot-password">Forgot password?</Link>
+          <span onClick={gotToResetPassword} className="modal-link">
+            ForgotPassword
+          </span>
         </p>
       </div>
     </div>
