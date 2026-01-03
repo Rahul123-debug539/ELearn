@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../controllers/authController")
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -83,6 +84,11 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ status: false, message: "Server error" });
   }
 });
+
+router.post("/forgot-password", auth.forgotPassword);
+router.post("/reset-password", auth.resetPassword);
+
+
 
 
 // =======================================================

@@ -94,6 +94,9 @@ function LoginModal({ visible, onClose }) {
             Register here
           </span>
         </p>
+        <p className="modal-switch">
+          <Link to="/forgot-password">Forgot password?</Link>
+        </p>
       </div>
     </div>
   );

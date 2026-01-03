@@ -87,6 +87,7 @@ function App() {
         <Route path="/About" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Courses" element={<Courses />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/create" element={<AdminRegister />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
