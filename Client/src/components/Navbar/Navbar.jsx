@@ -166,7 +166,7 @@ function Navbar({ onLoginClick }) {
           <div className="nav-logo">
             <img src="/favicon1.png" alt="logo" />
           </div>
-          <span className="nav-brand">ELearning</span>
+          <span className="nav-brand">CsMentor</span>
         </div>
 
         <div className="nav-links">
