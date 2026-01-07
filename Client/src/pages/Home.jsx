@@ -36,7 +36,7 @@ function Home() {
           </h1>
 
           <p className="hero-desc">
-            LearnEase gives you clear explanations, structured topics, 
+            CsMentor gives you clear explanations, structured topics, 
             interactive examples and a premium learning experience built 
             for students, beginners and developers.
           </p>
@@ -56,7 +56,7 @@ function Home() {
 
       {/* =================== ABOUT SECTION =================== */}
       <section className="about-highlight">
-        <h2>Why LearnEase?</h2>
+        <h2>Why CsMentor?</h2>
 
         <p>
           A well-organized coding platform that simplifies programming using
