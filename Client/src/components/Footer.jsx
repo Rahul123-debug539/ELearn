@@ -8,9 +8,9 @@ function Footer() {
 
         {/* BRAND */}
         <div className="footer-section">
-          <h2 className="footer-title">LearnEase</h2>
+          <h2 className="footer-title">CsMentor</h2>
           <p className="footer-text">
-            LearnEase is a platform designed to make programming simple,
+            CsMentor is a platform designed to make programming simple,
             structured and easy-to-understand for every learner.
           </p>
         </div>
