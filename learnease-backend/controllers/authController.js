@@ -121,7 +121,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     // 🔥 SEND REAL EMAIL USING RESEND (NO SMTP)
     const response = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "CSMentor <support@csmentor.in>",
       to: email,
       subject: "Password Reset OTP",
       text: `Your OTP is ${otp}`,
