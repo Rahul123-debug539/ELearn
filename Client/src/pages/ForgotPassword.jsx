@@ -1,6 +1,8 @@
 import { useState } from "react";
 import api from "../api/api";
 import "./ForgotPassword.css"
+import { useNavigate } from "react-router-dom";
+
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +10,8 @@ const ForgotPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [step, setStep] = useState(1);
   const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
+
 
   const sendOtp = async () => {
     try {
@@ -30,14 +34,25 @@ const ForgotPassword = () => {
 
 
   const resetPassword = async () => {
-    await api.post("api/auth/reset-password", {
+  try {
+    await api.post("/api/auth/reset-password", {
       email,
       otp,
       newPassword,
     });
+
     setMsg("Password updated successfully");
     setStep(3);
-  };
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+
+  } catch (err) {
+    setMsg(err.response?.data?.message || "Something went wrong");
+  }
+};
+
 
   return (
     <div className="auth-container">
