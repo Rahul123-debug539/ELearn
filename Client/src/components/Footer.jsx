@@ -40,8 +40,8 @@ function Footer() {
         {/* CONTACT */}
         <div className="footer-section">
           <h3>Contact Us</h3>
-          <p>Email: support@learnease.com</p>
-          <p>Phone: +91 9876543210</p>
+          <p>Email: drsanjivsharma2@gmail.com</p>
+          <p>Phone: +91 9634001591</p>
 
           {/* SOCIAL ICONS */}
           <div className="social-icons">
@@ -55,7 +55,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        © {new Date().getFullYear()} LearnEase — All Rights Reserved.
+        © {new Date().getFullYear()} Cs Mentor — All Rights Reserved.
       </div>
     </footer>
   );
