@@ -5,11 +5,11 @@ function About() {
     <section className="about-section" id="about">
 
       <h1 className="about-title">
-        What is <span>LearnEase?</span>
+        What is <span>CsMentor?</span>
       </h1>
 
       <p className="about-subtitle">
-        LearnEase is a modern coding education platform that blends simplicity,
+        CsMentor is a modern coding education platform that blends simplicity,
         structure and visual learning — helping students learn programming the right way.
       </p>
 
