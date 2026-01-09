@@ -8,9 +8,9 @@ function Footer() {
 
         {/* BRAND */}
         <div className="footer-section">
-          <h2 className="footer-title">LearnEase</h2>
+          <h2 className="footer-title">CsMentor</h2>
           <p className="footer-text">
-            LearnEase is a platform designed to make programming simple,
+            CsMentor is a platform designed to make programming simple,
             structured and easy-to-understand for every learner.
           </p>
         </div>
@@ -40,8 +40,8 @@ function Footer() {
         {/* CONTACT */}
         <div className="footer-section">
           <h3>Contact Us</h3>
-          <p>Email: support@learnease.com</p>
-          <p>Phone: +91 9876543210</p>
+          <p>Email: drsanjivsharma2@gmail.com</p>
+          <p>Phone: +91 9634001591</p>
 
           {/* SOCIAL ICONS */}
           <div className="social-icons">
@@ -55,7 +55,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        © {new Date().getFullYear()} LearnEase — All Rights Reserved.
+        © {new Date().getFullYear()} Cs Mentor — All Rights Reserved.
       </div>
     </footer>
   );

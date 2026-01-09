@@ -20,7 +20,7 @@ connectDB();
 // =======================
 const corsOptions = {
   origin: [
-    "https://e-learn-mocha.vercel.app",
+    "https://www.csmentor.in",
     "http://localhost:5173",
   ],
   credentials: true,

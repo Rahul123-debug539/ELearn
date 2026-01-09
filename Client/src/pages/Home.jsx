@@ -25,7 +25,7 @@ function Home() {
 
   return (
     <div>
-
+      {/* =================== SEO META TAGS =================== */}
       <Helmet>
         <title>CSMentor – Learn Programming the Smart Way</title>
         <meta
@@ -44,6 +44,7 @@ function Home() {
         <div className="hero-left">
           <p className="tag">A PLATFORM FOR STUDENTS & DEVELOPERS</p>
 
+          {/* H1 already PERFECT for SEO */}
           <h1 className="hero-title">
             Learn Programming
             <span className="gradient-text"> The Smart Way</span>
