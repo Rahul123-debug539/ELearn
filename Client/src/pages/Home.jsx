@@ -5,11 +5,12 @@ import Courses from "./Courses";
 import Footer from "../components/Footer";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 function Home() {
   const navigate = useNavigate();
+
   useEffect(() => {
-    // Mouse parallax effect for blobs
     const handleMouseMove = (e) => {
       const x = (e.clientX / window.innerWidth) * 30;
       const y = (e.clientY / window.innerHeight) * 30;
@@ -25,19 +26,32 @@ function Home() {
   return (
     <div>
 
+      <Helmet>
+        <title>CSMentor – Learn Programming the Smart Way</title>
+        <meta
+          name="description"
+          content="CSMentor is a smart online learning platform for students and developers. Learn programming with structured topics, clear explanations, and interactive examples."
+        />
+        <meta
+          name="keywords"
+          content="CSMentor, programming courses, learn programming, coding for beginners, web development, computer science"
+        />
+        <link rel="canonical" href="https://www.csmentor.in/" />
+      </Helmet>
+
       {/* =================== HERO SECTION =================== */}
       <section className="hero-modern">
         <div className="hero-left">
           <p className="tag">A PLATFORM FOR STUDENTS & DEVELOPERS</p>
 
           <h1 className="hero-title">
-            Learn Programming  
+            Learn Programming
             <span className="gradient-text"> The Smart Way</span>
           </h1>
 
           <p className="hero-desc">
-            LearnEase gives you clear explanations, structured topics, 
-            interactive examples and a premium learning experience built 
+            <strong>CSMentor</strong> gives you clear explanations, structured topics,
+            interactive examples and a premium learning experience built
             for students, beginners and developers.
           </p>
 
@@ -53,13 +67,12 @@ function Home() {
         </div>
       </section>
 
-
       {/* =================== ABOUT SECTION =================== */}
       <section className="about-highlight">
-        <h2>Why LearnEase?</h2>
+        <h2>Why CSMentor?</h2>
 
         <p>
-          A well-organized coding platform that simplifies programming using
+          CSMentor is a well-organized coding platform that simplifies programming using
           visual explanations, structured navigation and beginner-friendly content.
         </p>
 
@@ -86,10 +99,9 @@ function Home() {
         </div>
       </section>
 
-
       {/* =================== LANGUAGE SHOWCASE =================== */}
       <section className="languages-showcase">
-        <h2 className="gradient-text">Popular Courses</h2>
+        <h2 className="gradient-text">Popular Programming Courses on CSMentor</h2>
 
         <div className="lang-grid">
           <div className="lang-box">Java</div>
@@ -101,7 +113,6 @@ function Home() {
           <div className="lang-box">JavaScript</div>
         </div>
       </section>
-
 
       {/* =================== ORIGINAL SECTIONS =================== */}
       <Courses />
