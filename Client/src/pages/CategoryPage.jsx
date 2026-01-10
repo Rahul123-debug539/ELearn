@@ -110,7 +110,7 @@ function CategoryPage() {
   };
 
   /* -------------------------------
-      PREVIOUS / NEXT (RESTORED)
+      PREVIOUS / NEXT
   ------------------------------- */
   const goNext = () => {
     const list = subtopics[expandedTopic] || [];
@@ -127,7 +127,7 @@ function CategoryPage() {
   };
 
   /* -------------------------------
-      SIDEBAR UI (SAME AS BEFORE)
+      SIDEBAR UI
   ------------------------------- */
   const sidebar = (
     <div>
