@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import api from "../api/api";
 import CategoryLayout from "../components/Layout/CategoryLayout";
 import "./CategoryLayout.css"; // OUR NEW GFG-LIKE STYLING
 
 function CategoryPage() {
-  const { categoryId } = useParams();
+  const { slug } = useParams(); // ✅ slug instead of categoryId
+
+  const [category, setCategory] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [topics, setTopics] = useState([]);
   const [expandedTopic, setExpandedTopic] = useState(null);
@@ -16,7 +19,6 @@ function CategoryPage() {
   /*--------------------------------
       Scroll Top
   ----------------------------------*/
-
   const scrollTopAfterRender = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -25,14 +27,31 @@ function CategoryPage() {
     });
   };
 
-
   /* -------------------------------
-      LOAD TOPICS
+      LOAD CATEGORY BY SLUG
   ------------------------------- */
   useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const res = await api.get(`/api/category/slug/${slug}`);
+        setCategory(res.data);
+      } catch (err) {
+        console.error("Error fetching category:", err);
+      }
+    };
+
+    fetchCategory();
+  }, [slug]);
+
+  /* -------------------------------
+      LOAD TOPICS (USING CATEGORY ID)
+  ------------------------------- */
+  useEffect(() => {
+    if (!category?._id) return;
+
     const fetchTopics = async () => {
       try {
-        const res = await api.get(`/api/topics/${categoryId}`);
+        const res = await api.get(`/api/topics/${category._id}`);
         if (res.data.status) setTopics(res.data.topics);
       } catch (err) {
         console.error("Error fetching topics:", err);
@@ -43,7 +62,7 @@ function CategoryPage() {
     setExpandedTopic(null);
     setSelectedSubtopic(null);
     setContent([]);
-  }, [categoryId]);
+  }, [category]);
 
   /* -------------------------------
       EXPAND TOPIC → LOAD SUBTOPICS
@@ -96,7 +115,7 @@ function CategoryPage() {
     if (currentIndex < list.length - 1) {
       const nextSub = list[currentIndex + 1];
       loadContent(nextSub);
-      scrollTopAfterRender()
+      scrollTopAfterRender();
     }
   };
 
@@ -108,7 +127,6 @@ function CategoryPage() {
       scrollTopAfterRender();
     }
   };
-
 
   /* -------------------------------
       SIDEBAR UI
@@ -130,8 +148,9 @@ function CategoryPage() {
                 {(subtopics[topic._id] || []).map((sub) => (
                   <li
                     key={sub._id}
-                    className={`subtopic ${selectedSubtopic === sub._id ? "active" : ""
-                      }`}
+                    className={`subtopic ${
+                      selectedSubtopic === sub._id ? "active" : ""
+                    }`}
                     onClick={() => loadContent(sub)}
                   >
                     {sub.name}
@@ -152,12 +171,9 @@ function CategoryPage() {
     <div className="content-wrapper">
       {content.length === 0 && (
         <div className="welcome-state">
-
           <div className="welcome-badge"> Welcome to LearnEase</div>
 
-          <h1 className="welcome-title">
-            Start Your Learning Journey
-          </h1>
+          <h1 className="welcome-title">Start Your Learning Journey</h1>
 
           <p className="welcome-text">
             Select a <span>Topic</span> from the left sidebar and begin exploring
@@ -173,28 +189,25 @@ function CategoryPage() {
 
           <button
             className="welcome-btn"
-            onClick={() => document.querySelector(".vc-sidebar")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() =>
+              document.querySelector(".vc-sidebar")?.scrollIntoView({ behavior: "smooth" })
+            }
           >
             Select Your First Topic
           </button>
-
         </div>
       )}
-
 
       {content.length > 0 &&
         content.map((item, idx) => (
           <div key={idx} className="content-block">
-            {/* TITLE */}
             <h1 className="content-title">{item.title}</h1>
 
-            {/* FULL HTML CONTENT */}
             <div
               className="html-content"
               dangerouslySetInnerHTML={{ __html: item.fullContent }}
             />
 
-            {/* CLOUDINARY IMAGES */}
             {item.images?.length > 0 && (
               <div className="image-grid">
                 {item.images.map((img, i) => (
@@ -203,14 +216,12 @@ function CategoryPage() {
               </div>
             )}
 
-            {/* YOUTUBE VIDEO */}
             {item.videoUrl && (
               <div className="video-container">
                 <iframe src={item.videoUrl} title="video" allowFullScreen />
               </div>
             )}
 
-            {/* CUSTOM HTML ADS (RIGHT SIDE LIKE GFG) */}
             {item.adSection && (
               <div
                 className="ad-section"
@@ -218,7 +229,6 @@ function CategoryPage() {
               />
             )}
 
-            {/* AD IMAGE */}
             {item.adImage && (
               <img src={item.adImage} alt="ad" className="ad-image" />
             )}
@@ -226,10 +236,7 @@ function CategoryPage() {
             <hr className="content-divider" />
 
             <div className="nav-buttons">
-              <button
-                onClick={goPrev}
-                disabled={currentIndex === 0}
-              >
+              <button onClick={goPrev} disabled={currentIndex === 0}>
                 ⬅ Previous
               </button>
 
@@ -240,13 +247,34 @@ function CategoryPage() {
                 Next ➡
               </button>
             </div>
-
           </div>
         ))}
     </div>
   );
 
-  return <CategoryLayout sidebar={sidebar} content={contentArea} />;
+  return (
+    <>
+      {category && (
+        <Helmet>
+          <title>
+            {category.name} Course | Learn {category.name} | CSMentor
+          </title>
+
+          <meta
+            name="description"
+            content={`Learn ${category.name} programming with structured topics, examples and practice on CSMentor.`}
+          />
+
+          <link
+            rel="canonical"
+            href={`https://www.csmentor.in/category/${category.slug}`}
+          />
+        </Helmet>
+      )}
+
+      <CategoryLayout sidebar={sidebar} content={contentArea} />
+    </>
+  );
 }
 
 export default CategoryPage;
