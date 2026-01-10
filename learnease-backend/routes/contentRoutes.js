@@ -52,13 +52,13 @@ router.delete(
    PUBLIC ROUTES
 ============================= */
 
-//  GET SINGLE CONTENT (FOR VIEW PAGE & EDIT PAGE)
+// ✅ GET SINGLE CONTENT (FOR VIEW PAGE & EDIT PAGE)
 router.get("/single/:contentId", getSingleContent);
 
-//  GET CONTENT LIST BY SUBTOPIC
+// ✅ GET CONTENT LIST BY SUBTOPIC
 router.get("/list/:subtopicId", getContent);
 
-// BACKWARD COMPATIBILITY (IF OLD FRONTEND CALLS EXIST)
+// ✅ BACKWARD COMPATIBILITY (IF OLD FRONTEND CALLS EXIST)
 router.get("/:subtopicId", getContent);
 router.get("/related/:contentId", getRelatedContent);
 
