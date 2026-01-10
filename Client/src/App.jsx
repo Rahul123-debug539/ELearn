@@ -91,7 +91,11 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/create" element={<AdminRegister />} />
-        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/category/:categorySlug" element={<CategoryPage />} />
+        <Route path="/category/:categorySlug/:topicSlug" element={<CategoryPage />} />
+        <Route path="/category/:categorySlug/:topicSlug/:subtopicSlug" element={<CategoryPage />}
+/>
+
         <Route path="/content/:contentId" element={<ViewContent />} />
 
 
