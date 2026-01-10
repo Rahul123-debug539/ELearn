@@ -40,7 +40,7 @@ function CategoryPage() {
     if (!category?._id) return;
 
     const fetchTopics = async () => {
-      const res = await api.get(`/api/topics/${category._id}`);
+    const res = await api.get(`/api/topic/${category._id}`);
       if (res.data.status) setTopics(res.data.topics);
     };
 
@@ -78,7 +78,7 @@ function CategoryPage() {
     setExpandedTopic(topic._id);
 
     if (!subtopics[topic._id]) {
-      const res = await api.get(`/api/subtopics/${topic._id}`);
+      const res = await api.get(`/api/subtopic/${topic._id}`);
       if (res.data.status) {
         setSubtopics((prev) => ({
           ...prev,
@@ -100,7 +100,7 @@ function CategoryPage() {
     const index = list.findIndex((s) => s._id === sub._id);
     setCurrentIndex(index);
 
-    const res = await api.get(`/api/content/${sub._id}`);
+    const res = await api.get(`/api/content/list/${sub._id}`);
     if (res.data.status) setContent(res.data.content || []);
     else setContent([]);
 
