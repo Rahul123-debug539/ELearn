@@ -5,7 +5,7 @@ import CategoryLayout from "../components/Layout/CategoryLayout";
 import "./CategoryLayout.css"; // OUR NEW GFG-LIKE STYLING
 
 function CategoryPage() {
-  const { categoryId } = useParams();
+  const { slug } = useParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [topics, setTopics] = useState([]);
   const [expandedTopic, setExpandedTopic] = useState(null);
@@ -32,7 +32,7 @@ function CategoryPage() {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const res = await api.get(`/api/topics/${categoryId}`);
+        const res = await api.get(`/api/topics/${slug}`);
         if (res.data.status) setTopics(res.data.topics);
       } catch (err) {
         console.error("Error fetching topics:", err);
