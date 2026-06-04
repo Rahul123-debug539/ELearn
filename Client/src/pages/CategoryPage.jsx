@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import api from "../api/api";
 import CategoryLayout from "../components/Layout/CategoryLayout";
 import "./CategoryLayout.css";
@@ -15,7 +16,7 @@ function CategoryPage() {
   const [content, setContent] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  
+
 /* -------------------------------
     LOAD TOPICS (by category slug)
 ------------------------------- */
@@ -230,44 +231,87 @@ const goPrev = () => {
   /* -------------------------------
       CONTENT AREA
   ------------------------------- */
-  const contentArea = (
-    <div className="content-wrapper">
-      {content.length === 0 && (
-        <div className="welcome-state">
+const contentArea = (
+  <div className="content-wrapper">
 
-          <div className="welcome-badge">
-            Welcome to LearnEase
-          </div>
+    <Helmet>
+      <title>
+        {content.length > 0
+          ? `${content[0]?.title} | CsMentor`
+          : "CsMentor - Learn Programming & Computer Science"}
+      </title>
 
-          <h1 className="welcome-title">
-            Start Your Learning Journey
-          </h1>
+      <meta
+        name="description"
+        content={
+          content.length > 0
+            ? `${content[0]?.title} tutorial with examples, notes, interview questions and detailed explanations on CsMentor.`
+            : "Learn C, C++, Java, JavaScript, React, Node.js, MongoDB, DSA and Computer Science topics with examples and notes."
+        }
+      />
 
-          <p className="welcome-text">
-            Select a <span>Topic</span> from the left sidebar and begin exploring
-            high-quality lessons, examples, notes and practice content — all in one place.
-          </p>
+      <meta
+        name="keywords"
+        content={
+          content.length > 0
+            ? `${content[0]?.title}, ${subtopicSlug}, programming tutorial, coding tutorial, interview questions, CsMentor`
+            : "programming tutorials, coding tutorials, C language, C++, Java, JavaScript, React, Node.js, MongoDB, DSA, CsMentor"
+        }
+      />
 
-          <div className="welcome-steps">
-            <div className="step">Choose a Topic</div>
-            <div className="step">Read the Lesson</div>
-            <div className="step">Practice with Examples</div>
-            <div className="step">Level Up Your Skills</div>
-          </div>
+      <meta property="og:type" content="article" />
 
-          <button
-            className="welcome-btn"
-            onClick={() =>
-              document
-                .querySelector(".topic-list")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Select Your First Topic
-          </button>
+      <meta
+        property="og:title"
+        content={
+          content.length > 0
+            ? `${content[0]?.title} | CsMentor`
+            : "CsMentor"
+        }
+      />
 
-        </div>
-      )}
+      <meta
+        property="og:description"
+        content={
+          content.length > 0
+            ? `${content[0]?.title} tutorial with examples and notes.`
+            : "Learn programming and computer science with CsMentor."
+        }
+      />
+
+      <meta
+        property="og:url"
+        content={`https://www.csmentor.in/${categorySlug}/${topicSlug}/${subtopicSlug}`}
+      />
+
+      <meta
+        property="twitter:card"
+        content="summary_large_image"
+      />
+
+      <meta
+        property="twitter:title"
+        content={
+          content.length > 0
+            ? `${content[0]?.title} | CsMentor`
+            : "CsMentor"
+        }
+      />
+
+      <meta
+        property="twitter:description"
+        content={
+          content.length > 0
+            ? `${content[0]?.title} tutorial with examples and notes.`
+            : "Learn programming and computer science with CsMentor."
+        }
+      />
+
+      <link
+        rel="canonical"
+        href={`https://www.csmentor.in/${categorySlug}/${topicSlug}/${subtopicSlug}`}
+      />
+    </Helmet>
 
 
       {content.length > 0 && (
