@@ -5,10 +5,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function SecondaryNavbar() {
   const [categories, setCategories] = useState([]);
+  const [activeCat, setActiveCat] = useState(null); // slug
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeCat, setActiveCat] = useState(null);
 
+  /* -------------------------------
+      LOAD CATEGORIES
+  ------------------------------- */
   useEffect(() => {
     const fetchCats = async () => {
       try {
@@ -23,18 +26,24 @@ function SecondaryNavbar() {
     fetchCats();
   }, []);
 
+  /* -------------------------------
+      SET ACTIVE CATEGORY FROM URL
+  ------------------------------- */
   useEffect(() => {
     const parts = location.pathname.split("/");
-    if (parts[1] === "category" && parts[2]) {
-      setActiveCat(parts[2]);
+    if (parts[1]) {
+      setActiveCat(parts[1]); // categorySlug
     } else {
       setActiveCat(null);
     }
-  }, [location]);
+  }, [location.pathname]);
 
+  /* -------------------------------
+      HANDLE CATEGORY CLICK
+  ------------------------------- */
   const handleClick = (cat) => {
-    setActiveCat(cat._id);
-    navigate(`/category/${cat._id}`);
+    setActiveCat(cat.slug);
+    navigate(`/${cat.slug}`);
   };
 
   return (
@@ -43,7 +52,7 @@ function SecondaryNavbar() {
         {categories.map((cat) => (
           <li
             key={cat._id}
-            className={activeCat === cat._id ? "active" : ""}
+            className={activeCat === cat.slug ? "active" : ""}
             onClick={() => handleClick(cat)}
           >
             {cat.name}

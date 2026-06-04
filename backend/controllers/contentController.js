@@ -1,6 +1,6 @@
-// controllers/contentController.js
 const mongoose = require("mongoose");
 const Content = require("../models/Content");
+const Subtopic = require("../models/Subtopic");
 
 /* --------------------------------------------------
    Convert YouTube URL → Embed URL
@@ -27,12 +27,12 @@ function toYouTubeEmbed(url = "") {
   }
 }
 
-/* --------------------------------------------------
-   ADD CONTENT  (ADMIN)
--------------------------------------------------- */
+/* ==================================================
+   ADD CONTENT (ADMIN)
+================================================== */
 exports.addContent = async (req, res) => {
   try {
-    let {
+    const {
       subtopicId,
       title,
       fullContent,
@@ -90,10 +90,10 @@ exports.addContent = async (req, res) => {
   }
 };
 
-/* --------------------------------------------------
-   GET ALL CONTENT OF SUBTOPIC  
--------------------------------------------------- */
-exports.getContent = async (req, res) => {
+/* ==================================================
+   GET CONTENT BY SUBTOPIC ID (OLD FLOW)
+================================================== */
+exports.getContentBySubtopicId = async (req, res) => {
   try {
     const { subtopicId } = req.params;
 
@@ -115,9 +115,37 @@ exports.getContent = async (req, res) => {
   }
 };
 
-/* --------------------------------------------------
-  UPDATE CONTENT (ADMIN) — FINAL FIXED VERSION
--------------------------------------------------- */
+/* ==================================================
+   🔥 GET CONTENT BY SUBTOPIC SLUG (SEO / FRONTEND)
+================================================== */
+exports.getContentBySlug = async (req, res) => {
+  try {
+    const { subtopicSlug } = req.params;
+
+    const subtopic = await Subtopic.findOne({ slug: subtopicSlug });
+
+    if (!subtopic) {
+      return res.status(404).json({
+        status: false,
+        message: "Subtopic not found"
+      });
+    }
+
+    const content = await Content.find({
+      subtopicId: subtopic._id
+    }).sort({ createdAt: 1 });
+
+    res.json({ status: true, content });
+
+  } catch (err) {
+    console.error("GET CONTENT BY SLUG ERROR:", err);
+    res.status(500).json({ status: false, message: "Server error" });
+  }
+};
+
+/* ==================================================
+   UPDATE CONTENT (ADMIN)
+================================================== */
 exports.updateContent = async (req, res) => {
   try {
     const { contentId } = req.params;
@@ -132,33 +160,36 @@ exports.updateContent = async (req, res) => {
     const updates = {
       title: req.body.title,
       fullContent: req.body.fullContent,
+      code: req.body.code,
+      notes: req.body.notes,
+      examples: req.body.examples,
+      adSection: req.body.adSection,
       videoUrl: req.body.videoUrl
     };
 
     const files = req.files || {};
 
-    // ✅ MULTIPLE IMAGE REPLACE
     if (files.images?.length > 0) {
       updates.images = files.images.map(f => f.path);
     }
 
-    // ✅ AD IMAGE REPLACE
     if (files.adImage?.[0]) {
       updates.adImage = files.adImage[0].path;
     }
 
-    // ✅ YOUTUBE LINK SAFETY
     if (updates.videoUrl) {
       updates.videoUrl = toYouTubeEmbed(updates.videoUrl);
     }
 
-    const updated = await Content.findByIdAndUpdate(contentId, updates, {
-      new: true
-    });
+    const updated = await Content.findByIdAndUpdate(
+      contentId,
+      updates,
+      { new: true }
+    );
 
     res.json({
       status: true,
-      message: "Content updated successfully ✅",
+      message: "Content updated successfully",
       content: updated
     });
 
@@ -168,13 +199,12 @@ exports.updateContent = async (req, res) => {
   }
 };
 
-
-/* --------------------------------------------------
+/* ==================================================
    DELETE CONTENT (ADMIN)
--------------------------------------------------- */
+================================================== */
 exports.deleteContent = async (req, res) => {
   try {
-    const { contentId, subtopicId } = req.params;
+    const { contentId } = req.params;
 
     if (!mongoose.isValidObjectId(contentId)) {
       return res.status(400).json({
@@ -183,22 +213,11 @@ exports.deleteContent = async (req, res) => {
       });
     }
 
-    if (!mongoose.isValidObjectId(subtopicId)) {
-      return res.status(400).json({
-        status: false,
-        message: "Invalid subtopicId"
-      });
-    }
-
     await Content.findByIdAndDelete(contentId);
-
-    const updatedList = await Content.find({ subtopicId })
-      .sort({ createdAt: 1 });
 
     res.json({
       status: true,
-      message: "Content deleted",
-      content: updatedList
+      message: "Content deleted successfully"
     });
 
   } catch (err) {
@@ -207,9 +226,9 @@ exports.deleteContent = async (req, res) => {
   }
 };
 
-/* --------------------------------------------------
-   GET SINGLE CONTENT (ONE & ONLY SAFE VERSION ✅)
--------------------------------------------------- */
+/* ==================================================
+   GET SINGLE CONTENT (ADMIN / EDIT / VIEW)
+================================================== */
 exports.getSingleContent = async (req, res) => {
   try {
     const { contentId } = req.params;
@@ -230,10 +249,7 @@ exports.getSingleContent = async (req, res) => {
       });
     }
 
-    res.json({
-      status: true,
-      content
-    });
+    res.json({ status: true, content });
 
   } catch (err) {
     console.error("GET SINGLE CONTENT ERROR:", err);
@@ -241,22 +257,26 @@ exports.getSingleContent = async (req, res) => {
   }
 };
 
-// ✅ GET RELATED CONTENT (BY TITLE KEYWORDS)
+/* ==================================================
+   GET RELATED CONTENT (SAFE)
+================================================== */
 exports.getRelatedContent = async (req, res) => {
   try {
     const { contentId } = req.params;
 
     const current = await Content.findById(contentId);
     if (!current) {
-      return res.status(404).json({ status: false, message: "Content not found" });
+      return res.json({ status: true, related: [] });
     }
 
-    // Title ke keywords nikalna
-    const words = current.title.split(" ").filter(w => w.length > 2);
+    const words = current.title
+      .split(" ")
+      .filter(w => w.length > 2);
+
     const regex = new RegExp(words.join("|"), "i");
 
     const related = await Content.find({
-      _id: { $ne: contentId },     // same content exclude
+      _id: { $ne: contentId },
       title: regex
     }).limit(8);
 

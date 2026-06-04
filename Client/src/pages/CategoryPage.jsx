@@ -1,38 +1,27 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import CategoryLayout from "../components/Layout/CategoryLayout";
-import "./CategoryLayout.css"; // OUR NEW GFG-LIKE STYLING
+import "./CategoryLayout.css";
 
 function CategoryPage() {
-  const { categoryId } = useParams();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const { categorySlug, topicSlug, subtopicSlug } = useParams();
+  const navigate = useNavigate();
+
   const [topics, setTopics] = useState([]);
-  const [expandedTopic, setExpandedTopic] = useState(null);
   const [subtopics, setSubtopics] = useState({});
-  const [selectedSubtopic, setSelectedSubtopic] = useState(null);
+  const [expandedTopic, setExpandedTopic] = useState(null); // slug
+  const [selectedSubtopic, setSelectedSubtopic] = useState(null); // id
   const [content, setContent] = useState([]);
-
-  /*--------------------------------
-      Scroll Top
-  ----------------------------------*/
-
-  const scrollTopAfterRender = () => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    });
-  };
-
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   /* -------------------------------
-      LOAD TOPICS
+      LOAD TOPICS (by category slug)
   ------------------------------- */
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const res = await api.get(`/api/topics/${categoryId}`);
+        const res = await api.get(`/api/topics/by-slug/${categorySlug}`);
         if (res.data.status) setTopics(res.data.topics);
       } catch (err) {
         console.error("Error fetching topics:", err);
@@ -42,76 +31,125 @@ function CategoryPage() {
     fetchTopics();
     setExpandedTopic(null);
     setSelectedSubtopic(null);
-    setContent([]);
-  }, [categoryId]);
+
+    // 🔥 FIX: content wipe only when NO subtopicSlug
+    if (!subtopicSlug) {
+      setContent([]);
+    }
+
+  }, [categorySlug, subtopicSlug]);
+
 
   /* -------------------------------
-      EXPAND TOPIC → LOAD SUBTOPICS
+      LOAD SUBTOPICS (by topic slug)
   ------------------------------- */
   const toggleTopic = async (topic) => {
-    if (expandedTopic === topic._id) {
+    if (expandedTopic === topic.slug) {
       setExpandedTopic(null);
       return;
     }
 
-    setExpandedTopic(topic._id);
+    setExpandedTopic(topic.slug);
 
-    if (!subtopics[topic._id]) {
+    if (!subtopics[topic.slug]) {
       try {
-        const res = await api.get(`/api/subtopics/${topic._id}`);
+        const res = await api.get(
+          `/api/subtopics/by-slug/${categorySlug}/${topic.slug}`
+        );
+
         if (res.data.status) {
           setSubtopics((prev) => ({
             ...prev,
-            [topic._id]: res.data.subtopics
+            [topic.slug]: res.data.subtopics
           }));
         }
       } catch (err) {
-        console.error("Error fetching subtopics:", err);
+        console.error(err);
       }
     }
   };
 
   /* -------------------------------
-      LOAD CONTENT OF SUBTOPIC
+      LOAD CONTENT (by subtopic slug)
   ------------------------------- */
-  const loadContent = async (sub) => {
-    setSelectedSubtopic(sub._id);
+  useEffect(() => {
+    if (!subtopicSlug) return;
 
-    const list = subtopics[expandedTopic] || [];
-    const index = list.findIndex((s) => s._id === sub._id);
+    const fetchContent = async () => {
+      try {
+        const res = await api.get(
+          `/api/content/by-slug/${subtopicSlug}`
+        );
+
+        if (res.data.status) {
+          setContent(res.data.content || []);
+        } else {
+          setContent([]);
+        }
+      } catch (err) {
+        console.error(err);
+        setContent([]);
+      }
+    };
+
+    fetchContent();
+  }, [subtopicSlug]);
+
+  /* -------------------------------
+      NAV HELPERS
+  ------------------------------- */
+  const activeTopic = topics.find((t) => t.slug === expandedTopic);
+  const activeList = activeTopic ? subtopics[activeTopic.slug] || [] : [];
+
+  useEffect(() => {
+  if (
+    !subtopicSlug ||
+    !expandedTopic ||
+    !subtopics[expandedTopic]
+  ) return;
+
+  const list = subtopics[expandedTopic];
+  const index = list.findIndex((s) => s.slug === subtopicSlug);
+
+  if (index !== -1) {
     setCurrentIndex(index);
+    setSelectedSubtopic(list[index]._id);
+  }
+}, [subtopicSlug, expandedTopic, subtopics]);
 
-    try {
-      const res = await api.get(`/api/content/${sub._id}`);
-      if (res.data.status) setContent(res.data.content || []);
-      else setContent([]);
-    } catch (err) {
-      console.error("Error fetching content:", err);
-      setContent([]);
-    }
-  };
 
-  const goNext = () => {
-    const list = subtopics[expandedTopic] || [];
-    if (currentIndex < list.length - 1) {
-      const nextSub = list[currentIndex + 1];
-      loadContent(nextSub);
-      scrollTopAfterRender()
-    }
-  };
+const goNext = () => {
+  if (!activeList.length) return;
 
-  const goPrev = () => {
-    const list = subtopics[expandedTopic] || [];
-    if (currentIndex > 0) {
-      const prevSub = list[currentIndex - 1];
-      loadContent(prevSub);
-      scrollTopAfterRender();
-    }
-  };
+  const nextIndex = currentIndex + 1;
+  if (nextIndex >= activeList.length) return;
+
+  const next = activeList[nextIndex];
+
+  navigate(`/${categorySlug}/${activeTopic.slug}/${next.slug}`);
+  setCurrentIndex(nextIndex);
+  setSelectedSubtopic(next._id);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+
+const goPrev = () => {
+  if (!activeList.length) return;
+
+  const prevIndex = currentIndex - 1;
+  if (prevIndex < 0) return;
+
+  const prev = activeList[prevIndex];
+
+  navigate(`/${categorySlug}/${activeTopic.slug}/${prev.slug}`);
+  setCurrentIndex(prevIndex);
+  setSelectedSubtopic(prev._id);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
 
   /* -------------------------------
-      SIDEBAR UI
+      SIDEBAR
   ------------------------------- */
   const sidebar = (
     <div>
@@ -120,19 +158,28 @@ function CategoryPage() {
       <ul className="topic-list">
         {topics.map((topic) => (
           <li key={topic._id}>
-            <div className="topic-row" onClick={() => toggleTopic(topic)}>
+            <div
+              className="topic-row"
+              onClick={() => toggleTopic(topic)}
+            >
               <span>{topic.name}</span>
-              <span>{expandedTopic === topic._id ? "▾" : "▸"}</span>
+              <span>{expandedTopic === topic.slug ? "▾" : "▸"}</span>
             </div>
 
-            {expandedTopic === topic._id && (
+            {expandedTopic === topic.slug && (
               <ul className="subtopic-list">
-                {(subtopics[topic._id] || []).map((sub) => (
+                {(subtopics[topic.slug] || []).map((sub, index) => (
                   <li
                     key={sub._id}
-                    className={`subtopic ${selectedSubtopic === sub._id ? "active" : ""
+                    className={`subtopic ${sub._id === selectedSubtopic ? "active" : ""
                       }`}
-                    onClick={() => loadContent(sub)}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setSelectedSubtopic(sub._id);
+                      navigate(
+                        `/${categorySlug}/${topic.slug}/${sub.slug}`
+                      );
+                    }}
                   >
                     {sub.name}
                   </li>
@@ -146,14 +193,16 @@ function CategoryPage() {
   );
 
   /* -------------------------------
-      CONTENT UI (MAIN PANEL)
+      CONTENT AREA
   ------------------------------- */
   const contentArea = (
     <div className="content-wrapper">
       {content.length === 0 && (
         <div className="welcome-state">
 
-          <div className="welcome-badge"> Welcome to LearnEase</div>
+          <div className="welcome-badge">
+            Welcome to LearnEase
+          </div>
 
           <h1 className="welcome-title">
             Start Your Learning Journey
@@ -165,15 +214,19 @@ function CategoryPage() {
           </p>
 
           <div className="welcome-steps">
-            <div className="step"> Choose a Topic</div>
-            <div className="step"> Read the Lesson</div>
-            <div className="step"> Practice with Examples</div>
+            <div className="step">Choose a Topic</div>
+            <div className="step">Read the Lesson</div>
+            <div className="step">Practice with Examples</div>
             <div className="step">Level Up Your Skills</div>
           </div>
 
           <button
             className="welcome-btn"
-            onClick={() => document.querySelector(".vc-sidebar")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() =>
+              document
+                .querySelector(".topic-list")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
           >
             Select Your First Topic
           </button>
@@ -182,67 +235,50 @@ function CategoryPage() {
       )}
 
 
-      {content.length > 0 &&
-        content.map((item, idx) => (
-          <div key={idx} className="content-block">
-            {/* TITLE */}
-            <h1 className="content-title">{item.title}</h1>
+      {content.length > 0 && (
+        <>
+          {/* SINGLE H1 (SEO SAFE) */}
+          <h1 className="content-title">{content[0].title}</h1>
 
-            {/* FULL HTML CONTENT */}
-            <div
-              className="html-content"
-              dangerouslySetInnerHTML={{ __html: item.fullContent }}
-            />
-
-            {/* CLOUDINARY IMAGES */}
-            {item.images?.length > 0 && (
-              <div className="image-grid">
-                {item.images.map((img, i) => (
-                  <img key={i} src={img} alt="content-img" />
-                ))}
-              </div>
-            )}
-
-            {/* YOUTUBE VIDEO */}
-            {item.videoUrl && (
-              <div className="video-container">
-                <iframe src={item.videoUrl} title="video" allowFullScreen />
-              </div>
-            )}
-
-            {/* CUSTOM HTML ADS (RIGHT SIDE LIKE GFG) */}
-            {item.adSection && (
+          {content.map((item, idx) => (
+            <div key={idx} className="content-block">
               <div
-                className="ad-section"
-                dangerouslySetInnerHTML={{ __html: item.adSection }}
+                className="html-content"
+                dangerouslySetInnerHTML={{ __html: item.fullContent }}
               />
-            )}
 
-            {/* AD IMAGE */}
-            {item.adImage && (
-              <img src={item.adImage} alt="ad" className="ad-image" />
-            )}
+              {item.images?.length > 0 && (
+                <div className="image-grid">
+                  {item.images.map((img, i) => (
+                    <img key={i} src={img} alt="content" />
+                  ))}
+                </div>
+              )}
 
-            <hr className="content-divider" />
+              {item.videoUrl && (
+                <div className="video-container">
+                  <iframe src={item.videoUrl} title="video" allowFullScreen />
+                </div>
+              )}
 
-            <div className="nav-buttons">
-              <button
-                onClick={goPrev}
-                disabled={currentIndex === 0}
-              >
-                ⬅ Previous
-              </button>
-
-              <button
-                onClick={goNext}
-                disabled={currentIndex === (subtopics[expandedTopic]?.length - 1)}
-              >
-                Next ➡
-              </button>
+              <hr className="content-divider" />
             </div>
+          ))}
 
+          <div className="nav-buttons">
+            <button onClick={goPrev} disabled={currentIndex === 0}>
+              ⬅ Previous
+            </button>
+
+            <button
+              onClick={goNext}
+              disabled={currentIndex === activeList.length - 1}
+            >
+              Next ➡
+            </button>
           </div>
-        ))}
+        </>
+      )}
     </div>
   );
 

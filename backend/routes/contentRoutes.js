@@ -1,4 +1,3 @@
-// routes/contentRoutes.js
 const express = require("express");
 const router = express.Router();
 
@@ -10,9 +9,10 @@ const {
   addContent,
   updateContent,
   deleteContent,
-  getContent,
+  getContentBySubtopicId,
   getSingleContent,
-  getRelatedContent
+  getRelatedContent,
+  getContentBySlug
 } = require("../controllers/contentController");
 
 /* =============================
@@ -49,18 +49,20 @@ router.delete(
 );
 
 /* =============================
-   PUBLIC ROUTES
+   PUBLIC ROUTES (ORDER MATTERS)
 ============================= */
 
-// ✅ GET SINGLE CONTENT (FOR VIEW PAGE & EDIT PAGE)
-router.get("/single/:contentId", getSingleContent);
+// ✅ SEO FIRST
+router.get("/by-slug/:subtopicSlug", getContentBySlug);
 
-// ✅ GET CONTENT LIST BY SUBTOPIC
-router.get("/list/:subtopicId", getContent);
-
-// ✅ BACKWARD COMPATIBILITY (IF OLD FRONTEND CALLS EXIST)
-router.get("/:subtopicId", getContent);
+// ✅ RELATED CONTENT
 router.get("/related/:contentId", getRelatedContent);
 
+// ✅ SINGLE CONTENT
+router.get("/single/:contentId", getSingleContent);
+
+// ✅ OLD ID-BASED CONTENT (LAST)
+router.get("/list/:subtopicId", getContentBySubtopicId);
+router.get("/:subtopicId", getContentBySubtopicId);
 
 module.exports = router;

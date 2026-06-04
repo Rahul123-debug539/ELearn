@@ -163,17 +163,21 @@ function Navbar({ onLoginClick }) {
             ☰
           </button>
 
-          <div className="nav-logo">
-            <img src="/favicon1.png" alt="logo" />
+          <div className="nav-logo" onClick={() => navigate("/")}>
+            <img src="/favicon1.png" alt="CsMentor Logo" />
           </div>
-          <span className="nav-brand">CsMentor</span>
+
+          <span className="nav-brand" onClick={() => navigate("/")}>
+            CsMentor
+          </span>
+
         </div>
 
         <div className="nav-links">
           <Link to="/" className="nav-link">Home</Link>
-          <Link to="/About" className="nav-link">About</Link>
-          <Link to="/Contact" className="nav-link">Contact</Link>
-          <Link to="/Courses" className="nav-link">Courses</Link>
+          <Link to="/about" className="nav-link">About</Link>
+          <Link to="/contact" className="nav-link">Contact</Link>
+          <Link to="/courses" className="nav-link">Courses</Link>
           {user?.role === "admin" && (
             <Link to="/admin" className="nav-link">Admin</Link>
           )}
@@ -255,10 +259,10 @@ function Navbar({ onLoginClick }) {
             ✖
           </button>
 
-          <Link to="/" className="drawer-link" onClick={()=>{setDrawerOpen(false)}}>Home</Link>
-          <Link to="/About" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>About</Link>
-          <Link to="/Contact" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Contact</Link>
-          <Link to="/Courses" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Courses</Link>
+          <Link to="/" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Home</Link>
+          <Link to="/about" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>About</Link>
+          <Link to="/contact" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Contact</Link>
+          <Link to="/courses" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Courses</Link>
           {user?.role === "admin" && (
             <Link to="/admin" className="drawer-link" onClick={() => { setDrawerOpen(false) }}>Admin</Link>
           )}
@@ -305,11 +309,28 @@ function Navbar({ onLoginClick }) {
                         className="search-item"
                         onClick={() => {
                           setSearchOpen(false);
-                          if (section === "categories") navigate(`/category/${item._id}`);
-                          if (section === "topics") navigate(`/topic/${item._id}`);
-                          if (section === "content") navigate(`/content/${item._id}`);
 
+                          if (section === "categories") {
+                            navigate(`/${item.slug}`);
+                          }
+
+                          if (section === "topics") {
+                            navigate(`/${item.categorySlug}/${item.slug}`);
+                          }
+
+                          if (section === "subtopics") {
+                            navigate(
+                              `/${item.categorySlug}/${item.topicSlug}/${item.slug}`
+                            );
+                          }
+
+                          if (section === "content") {
+                            navigate(
+                              `/${item.categorySlug}/${item.topicSlug}/${item.subtopicSlug}`
+                            );
+                          }
                         }}
+
                       >
                         {item.title || item.name}
                       </li>

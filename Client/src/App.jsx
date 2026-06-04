@@ -73,26 +73,40 @@ function App() {
     sessionStorage.setItem("le_login_dismissed", "1");
   };
 
-  
+
 
   return (
     <>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Navbar onLoginClick={() => setShowLogin(true)} />
       <SecondaryNavbar />
 
       <Routes>
         {/* PUBLIC ROUTES */}
-        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
-        <Route path="/About" element={<About />} />
-        <Route path="/Contact" element={<Contact />} />
-        <Route path="/Courses" element={<Courses />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/courses" element={<Courses />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/create" element={<AdminRegister />} />
-        <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/content/:contentId" element={<ViewContent />} />
+
+        <Route
+          path="/:categorySlug/:topicSlug/:subtopicSlug"
+          element={<CategoryPage />}
+        />
+
+        <Route
+          path="/:categorySlug/:topicSlug"
+          element={<CategoryPage />}
+        />
+
+        <Route
+          path="/:categorySlug"
+          element={<CategoryPage />}
+        />
+
 
 
 
@@ -163,6 +177,8 @@ function App() {
             </ProtectedAdminRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
+
       </Routes>
 
       <Footer />

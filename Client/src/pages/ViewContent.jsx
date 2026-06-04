@@ -10,7 +10,10 @@ function ViewContent() {
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ FETCH CURRENT CONTENT + RELATED CONTENT
+  // 🛑 HARD GUARD — VERY IMPORTANT
+  // slug pages par aane se rokta hai
+  if (!contentId) return null;
+
   useEffect(() => {
     setLoading(true);
 
@@ -18,13 +21,18 @@ function ViewContent() {
     fetch(`http://localhost:5000/api/content/single/${contentId}`)
       .then((res) => res.json())
       .then((data) => {
-        setContent(data.content);
+        if (data?.status) {
+          setContent(data.content);
+        }
 
-        // ✅ RELATED CONTENT (TITLE BASED)
-        fetch(`http://localhost:5000/api/content/related/${contentId}`)
-          .then((res) => res.json())
-          .then((d) => setRelated(d.related || []));
-
+        // ✅ RELATED CONTENT (SAFE)
+        return fetch(
+          `http://localhost:5000/api/content/related/${contentId}`
+        );
+      })
+      .then((res) => res.json())
+      .then((d) => {
+        setRelated(d?.related || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -69,21 +77,14 @@ function ViewContent() {
           MAIN CONTENT
       ========================= */}
       <main className="vc-main">
-        {/* Title */}
         <h1 className="vc-title">{content.title}</h1>
 
-        {/* Video */}
         {content.videoUrl && (
           <div className="vc-video-box">
-            <iframe
-              src={content.videoUrl}
-              title="video"
-              allowFullScreen
-            />
+            <iframe src={content.videoUrl} title="video" allowFullScreen />
           </div>
         )}
 
-        {/* Images Gallery */}
         {content.images?.length > 0 && (
           <div className="vc-gallery">
             {content.images.map((img, idx) => (
@@ -96,20 +97,17 @@ function ViewContent() {
           </div>
         )}
 
-        {/* Main HTML Content */}
         <div
           className="vc-html"
           dangerouslySetInnerHTML={{ __html: content.fullContent }}
-        ></div>
+        />
 
-        {/* Code Section */}
         {content.code && (
           <pre className="vc-code">
             <code>{content.code}</code>
           </pre>
         )}
 
-        {/* Examples */}
         {content.examples && (
           <div className="vc-box">
             <h3>Examples</h3>
@@ -117,7 +115,6 @@ function ViewContent() {
           </div>
         )}
 
-        {/* Notes */}
         {content.notes && (
           <div className="vc-notes">
             <h3>Notes</h3>
