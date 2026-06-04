@@ -15,42 +15,48 @@ function CategoryPage() {
   const [content, setContent] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  /* -------------------------------
-      LOAD TOPICS (by category slug)
-  ------------------------------- */
-  useEffect(() => {
-    const fetchTopics = async () => {
-      try {
-        const res = await api.get(`/api/topics/by-slug/${categorySlug}`);
-        if (res.data.status) setTopics(res.data.topics);
-      } catch (err) {
-        console.error("Error fetching topics:", err);
-      }
-    };
+  
+/* -------------------------------
+    LOAD TOPICS (by category slug)
+------------------------------- */
+useEffect(() => {
+  const fetchTopics = async () => {
+    try {
+      const res = await api.get(`/api/topics/by-slug/${categorySlug}`);
 
-    fetchTopics();
+      if (res.data.status) {
+        setTopics(res.data.topics);
+      }
+    } catch (err) {
+      console.error("Error fetching topics:", err);
+    }
+  };
+
+  fetchTopics();
+
+  if (!subtopicSlug) {
     setExpandedTopic(null);
     setSelectedSubtopic(null);
+    setCurrentIndex(0);
+    setContent([]);
+  }
+}, [categorySlug]);
 
-    // 🔥 FIX: content wipe only when NO subtopicSlug
-    if (!subtopicSlug) {
-      setContent([]);
-    }
+/* -------------------------------
+    AUTO EXPAND TOPIC FROM URL
+------------------------------- */
+useEffect(() => {
+  if (!topics.length || !topicSlug) return;
 
-  }, [categorySlug, subtopicSlug]);
+  const topic = topics.find(
+    (t) => t.slug.toLowerCase() === topicSlug.toLowerCase()
+  );
 
+  if (!topic) return;
 
-  /* -------------------------------
-      LOAD SUBTOPICS (by topic slug)
-  ------------------------------- */
-  const toggleTopic = async (topic) => {
-    if (expandedTopic === topic.slug) {
-      setExpandedTopic(null);
-      return;
-    }
+  setExpandedTopic(topic.slug);
 
-    setExpandedTopic(topic.slug);
-
+  const loadSubtopics = async () => {
     if (!subtopics[topic.slug]) {
       try {
         const res = await api.get(
@@ -60,7 +66,7 @@ function CategoryPage() {
         if (res.data.status) {
           setSubtopics((prev) => ({
             ...prev,
-            [topic.slug]: res.data.subtopics
+            [topic.slug]: res.data.subtopics,
           }));
         }
       } catch (err) {
@@ -69,47 +75,52 @@ function CategoryPage() {
     }
   };
 
-  /* -------------------------------
-      LOAD CONTENT (by subtopic slug)
-  ------------------------------- */
-  useEffect(() => {
-    if (!subtopicSlug) return;
+  loadSubtopics();
+}, [topics, topicSlug, categorySlug]);
 
-    const fetchContent = async () => {
-      try {
-        const res = await api.get(
-          `/api/content/by-slug/${subtopicSlug}`
-        );
+/* -------------------------------
+    LOAD CONTENT (by subtopic slug)
+------------------------------- */
+useEffect(() => {
+  if (!subtopicSlug) return;
 
-        if (res.data.status) {
-          setContent(res.data.content || []);
-        } else {
-          setContent([]);
-        }
-      } catch (err) {
-        console.error(err);
+  const fetchContent = async () => {
+    try {
+      const res = await api.get(
+        `/api/content/by-slug/${subtopicSlug}`
+      );
+
+      if (res.data.status) {
+        setContent(res.data.content || []);
+      } else {
         setContent([]);
       }
-    };
+    } catch (err) {
+      console.error(err);
+      setContent([]);
+    }
+  };
 
-    fetchContent();
-  }, [subtopicSlug]);
+  fetchContent();
+}, [subtopicSlug]);
 
-  /* -------------------------------
-      NAV HELPERS
-  ------------------------------- */
-  const activeTopic = topics.find((t) => t.slug === expandedTopic);
-  const activeList = activeTopic ? subtopics[activeTopic.slug] || [] : [];
-
-  useEffect(() => {
+/* -------------------------------
+    AUTO SELECT SUBTOPIC
+------------------------------- */
+useEffect(() => {
   if (
     !subtopicSlug ||
     !expandedTopic ||
     !subtopics[expandedTopic]
-  ) return;
+  ) {
+    return;
+  }
 
   const list = subtopics[expandedTopic];
-  const index = list.findIndex((s) => s.slug === subtopicSlug);
+
+  const index = list.findIndex(
+    (s) => s.slug === subtopicSlug
+  );
 
   if (index !== -1) {
     setCurrentIndex(index);
@@ -117,36 +128,60 @@ function CategoryPage() {
   }
 }, [subtopicSlug, expandedTopic, subtopics]);
 
+/* -------------------------------
+    NAV HELPERS
+------------------------------- */
+const activeTopic = topics.find(
+  (t) => t.slug === expandedTopic
+);
+
+const activeList = activeTopic
+  ? subtopics[activeTopic.slug] || []
+  : [];
 
 const goNext = () => {
   if (!activeList.length) return;
 
   const nextIndex = currentIndex + 1;
+
   if (nextIndex >= activeList.length) return;
 
   const next = activeList[nextIndex];
 
-  navigate(`/${categorySlug}/${activeTopic.slug}/${next.slug}`);
   setCurrentIndex(nextIndex);
   setSelectedSubtopic(next._id);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
 
+  navigate(
+    `/${categorySlug}/${activeTopic.slug}/${next.slug}`
+  );
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
 const goPrev = () => {
   if (!activeList.length) return;
 
   const prevIndex = currentIndex - 1;
+
   if (prevIndex < 0) return;
 
   const prev = activeList[prevIndex];
 
-  navigate(`/${categorySlug}/${activeTopic.slug}/${prev.slug}`);
   setCurrentIndex(prevIndex);
   setSelectedSubtopic(prev._id);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
 
+  navigate(
+    `/${categorySlug}/${activeTopic.slug}/${prev.slug}`
+  );
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
   /* -------------------------------
       SIDEBAR
