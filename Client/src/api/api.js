@@ -1,13 +1,11 @@
 import axios from "axios";
 
 // ✅ Create API instance
-// const api = axios.create({
-//   baseURL: "https://elearn-70zx.onrender.com"
-// });
-
 const api = axios.create({
-  baseURL: "http://localhost:5000"
+  baseURL: "https://elearn-70zx.onrender.com"
 });
+
+
 
 
 // ✅ REQUEST: automatically attach token
