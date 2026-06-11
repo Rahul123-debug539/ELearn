@@ -16,9 +16,16 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageCategories from "./pages/admin/ManageCategories";
 import ManageTopics from "./pages/admin/ManageTopics";
 import ManageSubtopics from "./pages/admin/ManageSubtopics";
-import ManageContent from "./pages/admin/ManageContent";     // Add content
-import ContentList from "./pages/admin/ContentList";         // List content
-import EditContent from "./pages/admin/EditContent";         // Edit content
+import ManageContent from "./pages/admin/ManageContent";
+import ContentList from "./pages/admin/ContentList";
+import EditContent from "./pages/admin/EditContent";
+import PendingArticles from "./pages/admin/PendingArticles";
+import ReviewArticle from "./pages/admin/ReviewArticle";
+
+import StudentDashboard from "./pages/student/StudentDashboard";
+import SubmitArticle from "./pages/student/SubmitArticle";
+import MyArticles from "./pages/student/MyArticles";
+import ProtectedUserRoute from "./components/ProtectedUserRoute";
 
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 import Register from "./pages/Register";
@@ -147,6 +154,7 @@ function App() {
           }
         />
 
+
         {/* LIST CONTENT PAGE */}
         <Route
           path="/admin/manage-content"
@@ -177,7 +185,58 @@ function App() {
             </ProtectedAdminRoute>
           }
         />
+
+        <Route
+           path="/admin/pending-articles"
+           element={
+           <ProtectedAdminRoute>
+             <PendingArticles />
+           </ProtectedAdminRoute>
+           }
+        />
+
+
+        <Route
+          path="/admin/review-article/:id"
+          element={
+            <ProtectedAdminRoute>
+              <ReviewArticle />
+            </ProtectedAdminRoute>
+          }
+        />
+
+        {/* Student Dashboard Route */}
+
+        <Route
+          path="/student"
+          element={
+            <ProtectedUserRoute>
+              <StudentDashboard />
+            </ProtectedUserRoute>
+          }
+        />
+
+        <Route
+          path="/student/submit-article"
+          element={
+            <ProtectedUserRoute>
+              <SubmitArticle />
+            </ProtectedUserRoute>
+          }
+        />
+
+        <Route
+          path="/student/my-articles"
+          element={
+            <ProtectedUserRoute>
+              <MyArticles />
+            </ProtectedUserRoute>
+          }
+        />
+
+
         <Route path="*" element={<NotFound />} />
+
 
       </Routes>
 

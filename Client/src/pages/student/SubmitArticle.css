@@ -1,0 +1,148 @@
+.student-page {
+  max-width: 1100px;
+  
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.student-page h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #222;
+}
+
+.student-select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  background: #fff;
+}
+
+.student-select:focus {
+  border-color: #2563eb;
+}
+
+.student-form {
+  margin-top: 20px;
+}
+
+.student-form input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.student-form input[type="text"]:focus {
+  border-color: #2563eb;
+}
+
+.student-form label {
+  display: block;
+  margin: 15px 0 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.student-form input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  margin-bottom: 15px;
+}
+
+.student-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 25px;
+  transition: all 0.3s ease;
+}
+
+.student-btn:hover {
+  background: #1d4ed8;
+}
+
+.student-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* React Quill Styling */
+
+.ql-toolbar.ql-snow {
+  border-radius: 10px 10px 0 0;
+}
+
+.ql-container.ql-snow {
+  border-radius: 0 0 10px 10px;
+  min-height: 300px;
+  font-size: 15px;
+}
+
+/* Image Preview */
+
+.preview-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.preview-item {
+  position: relative;
+}
+
+.preview-item img {
+  width: 130px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: crimson;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .student-page {
+    padding: 15px;
+  }
+
+  .student-page h2 {
+    font-size: 1.5rem;
+  }
+
+  .student-btn {
+    padding: 12px;
+  }
+}

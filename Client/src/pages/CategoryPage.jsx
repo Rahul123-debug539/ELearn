@@ -35,6 +35,8 @@ useEffect(() => {
 
   fetchTopics();
 
+  
+
   if (!subtopicSlug) {
     setExpandedTopic(null);
     setSelectedSubtopic(null);
@@ -42,6 +44,36 @@ useEffect(() => {
     setContent([]);
   }
 }, [categorySlug]);
+
+
+useEffect(() => {
+  if (!topics.length) return;
+
+  if (topicSlug || subtopicSlug) return;
+
+  const loadDefaultPage = async () => {
+    try {
+      const firstTopic = topics[0];
+
+      const res = await api.get(
+        `/api/subtopics/by-slug/${categorySlug}/${firstTopic.slug}`
+      );
+
+      if (res.data.status && res.data.subtopics.length) {
+        const firstSubtopic = res.data.subtopics[0];
+
+        navigate(
+          `/${categorySlug}/${firstTopic.slug}/${firstSubtopic.slug}`,
+          { replace: true }
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  loadDefaultPage();
+}, [topics, categorySlug]);
 
 /* -------------------------------
     AUTO EXPAND TOPIC FROM URL
@@ -182,6 +214,46 @@ const goPrev = () => {
     top: 0,
     behavior: "smooth",
   });
+};
+
+
+const toggleTopic = async (topic) => {
+
+  // collapse
+  if (expandedTopic === topic.slug) {
+    setExpandedTopic(null);
+    return;
+  }
+
+  // expand
+  setExpandedTopic(topic.slug);
+
+  // already loaded
+  if (subtopics[topic.slug]) return;
+
+  try {
+
+    const res = await api.get(
+      `/api/subtopics/by-slug/${categorySlug}/${topic.slug}`
+    );
+
+    if (res.data.status) {
+
+      setSubtopics((prev) => ({
+        ...prev,
+        [topic.slug]: res.data.subtopics
+      }));
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Subtopic fetch error:",
+      error
+    );
+
+  }
 };
 
   /* -------------------------------

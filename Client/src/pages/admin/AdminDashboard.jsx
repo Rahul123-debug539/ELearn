@@ -61,6 +61,10 @@ function AdminDashboard() {
             <h3>Edit & Delete Content</h3>
             <p>Edit & Delete images, code blocks, examples and main learning content.</p>
           </Link>
+          <Link to="/admin/pending-articles" className="admin-card">
+            <h3>Pending Articles</h3>
+            <p>Review user submitted articles</p>
+          </Link>
         </div>
       </main>
     </div>

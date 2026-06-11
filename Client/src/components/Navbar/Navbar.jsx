@@ -181,6 +181,9 @@ function Navbar({ onLoginClick }) {
           {user?.role === "admin" && (
             <Link to="/admin" className="nav-link">Admin</Link>
           )}
+          {user?.role === "user" && (
+            <Link to="/student" className="nav-link">Contributor</Link>
+          )}
         </div>
 
         <div className="nav-right">

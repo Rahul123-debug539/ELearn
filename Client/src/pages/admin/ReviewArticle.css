@@ -1,0 +1,119 @@
+.review-container {
+
+  max-width: 1600px;
+
+  margin: auto;
+
+  padding-top: 140px;
+
+  padding-left: 20px;
+
+  padding-right: 20px;
+
+  padding-bottom: 40px;
+}
+
+.review-header {
+
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.compare-grid {
+
+  display: grid;
+
+  grid-template-columns:
+  1fr 1fr;
+
+  gap: 20px;
+}
+
+.compare-box {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 20px;
+
+  min-height: 600px;
+
+  overflow-y: auto;
+
+  box-shadow:
+  0 4px 12px
+  rgba(0,0,0,.08);
+}
+
+.compare-box h2 {
+
+  margin-bottom: 20px;
+}
+
+.action-box {
+
+  margin-top: 30px;
+}
+
+.action-box textarea {
+
+  width: 100%;
+
+  min-height: 120px;
+
+  padding: 15px;
+
+  border-radius: 10px;
+
+  border: 1px solid #ddd;
+}
+
+.btn-group {
+
+  margin-top: 20px;
+
+  display: flex;
+
+  gap: 15px;
+}
+
+.approve-btn {
+
+  background: green;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.reject-btn {
+
+  background: crimson;
+
+  color: white;
+
+  border: none;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+@media(max-width:900px){
+
+  .compare-grid{
+
+    grid-template-columns:
+    1fr;
+  }
+}
